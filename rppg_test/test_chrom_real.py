@@ -65,8 +65,9 @@ def process_chrom(R_buffer, G_buffer, B_buffer, fps):
     return detected_freq * 60, snr
 
 def main():
-    # Initialize OpenCV face detector
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    import mediapipe as mp
+    mp_face_detection = mp.solutions.face_detection
+    face_detection = mp_face_detection.FaceDetection(min_detection_confidence=0.5)
     
     if len(sys.argv) > 1:
         video_path = sys.argv[1]
@@ -79,7 +80,7 @@ def main():
     
     # Try to get the actual FPS of the camera, default to 30 if unavailable
     fps = cap.get(cv2.CAP_PROP_FPS)
-    if fps == 0 or np.isnan(fps):
+    if fps <= 0 or np.isnan(fps):
         fps = 30.0
         
     window_sec = 10
@@ -102,19 +103,18 @@ def main():
         if not success:
             break
             
-        # Convert to grayscale for face detection
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        
-        # Detect faces
-        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-        
-        # Convert BGR to RGB for rPPG processing
+        # Convert BGR to RGB for MediaPipe and rPPG processing
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         
-        if len(faces) > 0:
-            # Sort faces by size (largest first) to avoid jumping to background faces
-            faces = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)
-            (x, y, w, h) = faces[0]
+        # Detect faces
+        results = face_detection.process(image_rgb)
+        
+        if results.detections:
+            # Take the most prominent face
+            detection = results.detections[0]
+            bboxC = detection.location_data.relative_bounding_box
+            ih, iw, _ = image.shape
+            x, y, w, h = int(bboxC.xmin * iw), int(bboxC.ymin * ih), int(bboxC.width * iw), int(bboxC.height * ih)
             
             # Smooth the bounding box to reduce jitter (which creates massive noise)
             if smooth_w == 0:
@@ -126,25 +126,55 @@ def main():
                 smooth_w = int(alpha_box * w + (1 - alpha_box) * smooth_w)
                 smooth_h = int(alpha_box * h + (1 - alpha_box) * smooth_h)
             
-            # Define ROI (Region of Interest): Forehead
-            # This avoids glasses, eyes blinking, and mouth movement!
-            roi_x = max(0, smooth_x + int(smooth_w * 0.3))
-            roi_y = max(0, smooth_y + int(smooth_h * 0.1))
-            roi_w = int(smooth_w * 0.4)
-            roi_h = int(smooth_h * 0.2)
+            # Define ROIs (Region of Interest)
             
-            # Draw the ROI on the image for visualization
-            cv2.rectangle(image, (roi_x, roi_y), (roi_x + roi_w, roi_y + roi_h), (0, 255, 0), 2)
+            # 1. Forehead
+            fh_x = max(0, smooth_x + int(smooth_w * 0.3))
+            fh_y = max(0, smooth_y + int(smooth_h * 0.1))
+            fh_w = int(smooth_w * 0.4)
+            fh_h = int(smooth_h * 0.2)
             
-            roi = image_rgb[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w]
-            if roi.size > 0:
-                # Average colors across the ROI
-                avg_color_per_row = np.average(roi, axis=0)
-                avg_color = np.average(avg_color_per_row, axis=0)
+            # 2. Left Cheek
+            lc_x = max(0, smooth_x + int(smooth_w * 0.15))
+            lc_y = max(0, smooth_y + int(smooth_h * 0.55))
+            lc_w = int(smooth_w * 0.25)
+            lc_h = int(smooth_h * 0.25)
+            
+            # 3. Right Cheek
+            rc_x = max(0, smooth_x + int(smooth_w * 0.6))
+            rc_y = max(0, smooth_y + int(smooth_h * 0.55))
+            rc_w = int(smooth_w * 0.25)
+            rc_h = int(smooth_h * 0.25)
+            
+            # 4. Eyes (Per user request, though usually noisy due to blinking)
+            eye_x = max(0, smooth_x + int(smooth_w * 0.2))
+            eye_y = max(0, smooth_y + int(smooth_h * 0.35))
+            eye_w = int(smooth_w * 0.6)
+            eye_h = int(smooth_h * 0.15)
+            
+            rois = [
+                (fh_x, fh_y, fh_w, fh_h),
+                (lc_x, lc_y, lc_w, lc_h),
+                (rc_x, rc_y, rc_w, rc_h),
+                (eye_x, eye_y, eye_w, eye_h)
+            ]
+            
+            avg_colors = []
+            
+            for (rx, ry, rw, rh) in rois:
+                # Draw the ROI on the image for visualization
+                cv2.rectangle(image, (rx, ry), (rx + rw, ry + rh), (0, 255, 0), 2)
+                roi = image_rgb[ry:ry+rh, rx:rx+rw]
+                if roi.size > 0:
+                    avg_colors.append(np.average(np.average(roi, axis=0), axis=0))
+                    
+            if len(avg_colors) > 0:
+                # Average all the ROIs together
+                final_avg = np.mean(avg_colors, axis=0)
                 
-                R_buffer.append(avg_color[0])
-                G_buffer.append(avg_color[1])
-                B_buffer.append(avg_color[2])
+                R_buffer.append(final_avg[0])
+                G_buffer.append(final_avg[1])
+                B_buffer.append(final_avg[2])
                 
                 # Compute BPM if we have at least 3 seconds of data
                 if len(R_buffer) > fps * 3:
@@ -169,10 +199,21 @@ def main():
         # Display the resulting frame
         cv2.imshow('rPPG CHROM Test', image)
         
-        # Press 'q' to exit. Use a tiny delay so video plays fast.
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # Press 'q' to exit.
+        # Calculate proper delay so the video plays at normal speed (not hyper-speed)
+        delay = max(1, int(1000 / fps))
+        if cv2.waitKey(delay) & 0xFF == ord('q'):
             break
             
+    print("\n============================================================")
+    print("                     rPPG ANALYSIS RESULT                   ")
+    print("============================================================")
+    print(f"Final Heart Rate (BPM): {last_bpm:.1f}")
+    print(f"Signal-to-Noise Ratio:  {last_snr:.1f} dB")
+    print("-" * 60)
+    print(f"CONCLUSION: {status_text}")
+    print("============================================================\n")
+    
     cap.release()
     cv2.destroyAllWindows()
 
