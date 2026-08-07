@@ -1,0 +1,35 @@
+schema_version: "2.0"
+decision:
+  authentic_max_p: 0.35
+  manipulated_min_p: 0.65
+  # NOTE: evidence_weight is capped at 0.5 when only one modality is usable
+  # (e.g. silent video). Raising this above 0.5 breaks every silent clip. See plan §3.5.
+  min_evidence_weight: 0.30
+rppg:
+  band_hz: [0.7, 4.0]
+  min_window_sec: 12.0
+  quality_snr_floor_db: -3.0
+  quality_snr_ceil_db: 9.0
+  hr_spread_norm_bpm: 12.0
+  # Below this quality, the manipulation score is forced to 0.5 (neutral) rather
+  # than computed from noise-dominated ROIs. Removing this gate makes dark and
+  # compressed AUTHENTIC clips score as manipulated. See plan §3.4.
+  min_quality_for_scoring: 0.30
+  weights: {corr: 0.40, spread: 0.35, phase: 0.25}
+lipsync:
+  envelope_band_hz: [1.0, 8.0]
+  window_sec: 1.0
+  hop_sec: 0.5
+  max_lag_ms: 300
+  min_voiced_windows: 8
+  lag_iqr_floor_ms: 40
+  lag_iqr_ceil_ms: 160
+  weights: {iqr: 0.50, ncc: 0.30, offset: 0.20}
+fusion:
+  prior_weights: {rppg: 0.5, lipsync: 0.5}
+ingest:
+  min_duration_sec: 4.0
+  max_decode_sec: 300.0
+  analyze_first_sec: 20.0
+  max_upload_mb: 100
+  min_face_detection_rate: 0.6

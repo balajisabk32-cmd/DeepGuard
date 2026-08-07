@@ -1,0 +1,2 @@
+# Vendored model weights. Baked into the Docker image via COPY.
+# Contents are gitignored (GitHub rejects blobs >100MB). Download at H0-E.

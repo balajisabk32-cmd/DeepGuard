@@ -1,5 +1,67 @@
-deepfake_env/
-ffmpeg/
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+deepfake_env/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
+Thumbs.db
+
+# Project specifics
+ffmpeg/
+
+# Data & Sessions (gitignored except .gitkeep)
+# Corpus media is NEVER committed: it contains teammates' faces and derived
+# heart-rate waveforms — biometric/health-adjacent personal data (plan §8.4).
+data/corpus/*
+!data/corpus/.gitkeep
+!data/corpus/MANIFEST.csv
+data/sessions/*
+!data/sessions/.gitkeep
+
+# Models — ignore ALL weights.
+# This rule was previously commented out. H0-E downloads Wav2Lip checkpoints and
+# face-swap models (hundreds of MB); GitHub hard-rejects any blob over 100 MB, so
+# the first push after H0-E would have failed mid-Hour-0. Weights are vendored into
+# the Docker image via COPY, never through git.
+models/*
+!models/.gitkeep
+
+# Locked dependency set IS committed — it is the reproducibility contract.
+!requirements.lock.txt
+
+# Testing & Logs
+.pytest_cache/
+.ruff_cache/
+*.log
+results/*
+!results/.gitkeep

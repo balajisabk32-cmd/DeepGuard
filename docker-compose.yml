@@ -1,0 +1,47 @@
+# `version:` intentionally omitted — obsolete under Compose v2 and emits a warning.
+#
+# Offline check (CP3 gate + §9 checklist):
+#   docker compose build && docker run --network none deepguard-api python -c "import mediapipe"
+# Model weights are baked in via Dockerfile COPY, never fetched at runtime.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deepguard-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data          # corpus + session scratch, not baked into the image
+      - ./config:/app/config      # thresholds.yaml editable without a rebuild
+      - ./models:/app/models:ro   # weights visible without a rebuild during the event
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deepguard-api
+    command: streamlit run src/ui/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./models:/app/models:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Inside the compose network the API is reachable by service name, NOT by
+      # localhost. Without this the UI works on the host and breaks in the container.
+      - API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy

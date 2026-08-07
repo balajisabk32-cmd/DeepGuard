@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+# Without this, `pytest tests/test_contracts.py` fails with
+# "ModuleNotFoundError: No module named 'src'" — the console script puts the
+# test file's own directory on sys.path, not the repo root. Only `python -m pytest`
+# happened to work. plan.md prescribes the bare `pytest` form as the CP1 gate,
+# so the repo root goes on the path explicitly.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "edge_case: input-robustness tests required by plan.md §6.2 before CP3 passes",
+]
