@@ -29,7 +29,9 @@ def load_model():
     if model is None:
         print("Loading AI Detection Model... please wait.")
         model = SyncNet_color().to(device)
-        checkpoint = torch.load('checkpoints/lipsync_expert.pth', map_location=device)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        checkpoint_path = os.path.join(script_dir, 'checkpoints', 'lipsync_expert.pth')
+        checkpoint = torch.load(checkpoint_path, map_location=device)
         model.load_state_dict(checkpoint['state_dict'])
         model.eval()
         print("Model loaded successfully!")
@@ -39,6 +41,13 @@ def process_clip(frames, audio, sr):
     global app_state, last_result
     
     try:
+        # Resample frames to exactly 25 FPS (SyncNet is trained specifically on 25 FPS)
+        # This fixes out-of-sync false positives caused by webcams running at 30 or 60 FPS
+        target_num_frames = int(duration * 25)
+        if len(frames) > 0:
+            indices = np.linspace(0, len(frames) - 1, target_num_frames).astype(int)
+            frames = [frames[i] for i in indices]
+
         # Save temp audio for Wav2Lip processing
         AUDIO_PATH = 'temp_audio.wav'
         sf.write(AUDIO_PATH, audio, sr)
@@ -122,8 +131,8 @@ def process_clip(frames, audio, sr):
         scores = np.array(scores)
         mean_score = scores.mean()
         
-        # Evaluate result based on the sync score
-        if mean_score > 0.55:
+        # Evaluate result based on the sync score (lowered threshold to 0.35 for uncalibrated webcams)
+        if mean_score > 0.35:
             last_result = f"REAL HUMAN DETECTED (Sync Score: {mean_score:.2f})"
         else:
             last_result = f"FAKE / AI DETECTED (Sync Score: {mean_score:.2f})"
