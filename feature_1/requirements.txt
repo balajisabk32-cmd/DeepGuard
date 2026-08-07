@@ -1,0 +1,18 @@
+# Core, required
+numpy>=1.24
+opencv-python>=4.8
+
+# MediaPipe: uses the modern Tasks API (mp.tasks.vision.FaceLandmarker).
+# On first run this downloads a small (~4MB) face_landmarker.task model
+# bundle from storage.googleapis.com and caches it under
+# ~/.cache/visual_consistency_analyzer/. If your network can't reach that
+# host, download the file manually from the URL printed in the error
+# message and pass its local path via
+# VisualConsistencyAnalyzer(face_landmarker_model_path="...").
+mediapipe>=0.10.30
+
+# Optional — only needed for the fine-tuned CNN spatial-detection path.
+# Without these installed, spatial_detector.py automatically falls back to
+# the heuristic (frequency-spectrum + jawline-blur) scorer.
+torch>=2.0
+torchvision>=0.15
