@@ -1,0 +1,5 @@
+deepfake_env/
+ffmpeg/
+__pycache__/
+*.pyc
+.DS_Store
