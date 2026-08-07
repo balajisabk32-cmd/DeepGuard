@@ -22,10 +22,13 @@ def process_chrom(R_buffer, G_buffer, B_buffer, fps):
     # Filter
     nyq = 0.5 * fps
     
-    # Need enough samples for the filter order
+    # Need enough samples for the filter order.
+    # Returned a bare `None` here while every other path returns a 2-tuple, so the
+    # caller's `result[0]` raised TypeError. Unreachable in practice only because
+    # the caller happens to gate on len(buffer) > fps*3.
     if len(X) < 15:
-        return None
-        
+        return None, 0.0
+
     b, a = signal.butter(3, [0.7 / nyq, 4.0 / nyq], btype='bandpass')
     try:
         X_f = signal.filtfilt(b, a, X)
@@ -154,13 +157,26 @@ def main():
                         last_bpm = bpm
                         last_snr = snr
                         
-                        # Threshold for SNR to determine if it's a real pulse or random noise
-                        if snr > 1.0:
-                            status_text = "REAL"
-                            status_color = (0, 255, 0) # Green
+                        # DO NOT restore the old "snr > 1.0 -> REAL else DEEPFAKE" logic.
+                        #
+                        # Two things were wrong with it:
+                        #  1. "No pulse => fake" is false for face swaps. The composite
+                        #     keeps authentic skin outside the blend mask, so a swap
+                        #     retains a pulse. What breaks is agreement BETWEEN facial
+                        #     regions — see src/rppg/analyze.py and plan §3.4.
+                        #  2. A 1.0 dB threshold means signal power only 26% above
+                        #     noise. Any dark or compressed AUTHENTIC clip is accused.
+                        #
+                        # This script now reports signal quality only. It does not vote.
+                        if snr > 6.0:
+                            status_text = "PULSE SIGNAL: STRONG"
+                            status_color = (0, 255, 0)
+                        elif snr > 0.0:
+                            status_text = "PULSE SIGNAL: WEAK"
+                            status_color = (0, 255, 255)
                         else:
-                            status_text = "DEEPFAKE (No Pulse)"
-                            status_color = (0, 0, 255) # Red
+                            status_text = "PULSE SIGNAL: NOT RECOVERABLE"
+                            status_color = (0, 165, 255)
                             
             # Display the BPM, SNR and Status
             cv2.putText(image, f"BPM: {last_bpm:.1f} (SNR: {last_snr:.1f}dB)", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)

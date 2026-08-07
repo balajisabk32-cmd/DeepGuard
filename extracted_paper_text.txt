@@ -1,0 +1,1416 @@
+=== PAGE 1 ===
+Received26September2025,accepted13October2025,dateofpublication22October2025,dateofcurrentversion30October2025.
+DigitalObjectIdentifier10.1109/ACCESS.2025.3624284
+A Comprehensive Review of Deepfake Detection
+Techniques Utilizing Remote
+Photoplethysmography
+KAVYASREEKAMMARI1,(Member,IEEE),MANJUKHANNA 1,(SeniorMember,IEEE),
+YASASREELASYAANNAMBHOTLA1,(Member,IEEE),KEERTHIDEVARAJANANURADHA1,
+POOSARLANAGASURYAPADMANAMRATA 2,K.V.NAGARAJA 3,T.V.SMITHA 3,
+TONYJAN 4,(Member,IEEE),ANDGANESHR.NAIK 4,5,(SeniorMember,IEEE)
+1DepartmentofComputerScienceandEngineering,AmritaSchoolofComputing,AmritaVishwaVidyapeetham,Bengaluru560035,India
+2DepartmentofElectronicsandCommunicationEngineering,AmritaVishwaVidyapeetham,Bengaluru560035,India
+3ComputationalScienceLaboratory,AmritaSchoolofEngineering,AmritaVishwaVidyapeetham,Bengaluru560035,India
+4CentreforArtificialIntelligenceResearchandOptimization(AIRO),DesignandCreativeTechnologyVertical,TorrensUniversityAustralia,Ultimo,NSW
+2007,Australia
+5DesignandCreativeTechnology,TorrensUniversityAustralia,Adelaide,SA5000,Australia
+Correspondingauthors:K.V.Nagaraja(kv_nagaraja@blr.amrita.edu)andGaneshR.Naik(ganesh.naik@torrens.edu.au)
+ThisworkwassupportedbyAmritaVishwaVidyapeetham.
+ABSTRACT Deepfake technology enables the creation of highly realistic but fabricated videos, raising
+significantconcernsabouttheauthenticityandreliabilityofdigitalmedia.Asdeepfakesbecomeincreasingly
+sophisticated,effectivedetectionmethodshavebecomecrucial.OnepromisingapproachinvolvesRemote
+PhotoPlethysmography(rPPG),anon-contactmethodthatmeasuressubtlechangesinskincolortoestimate
+heartrate.rPPGisapowerfultoolfordetectionasdeepfakevideosoftenfailtoreplicatethephysiological
+signals inherent in real human subjects. This survey aims to provide a comprehensive understanding on
+variousrPPG-basedtechniquesforidentifyingdeepfakesandanalyzingtheireffectiveness,challenges,and
+future potential. To improve the detection accuracy, methods that enhance rPPG signals in combination
+with machine learning models are examined. Real-world applications, including the detection of fake
+celebrityvideosthatareemployedinpropaganda,illustratetheapplicabilityofthesetechniques.Through
+acomprehensivereviewofexistingrPPG-baseddeepfakedetectiontechniques,thissurveyaimstoinform
+future research and development endeavors in the area, thereby contributing to broader efforts to secure
+digitalcontentfromtamperingandexploitation.
+INDEXTERMS Deepfakes,deepfakesgeneration,deeplearning,GANs,rPPG,VAEs.
+I. INTRODUCTION Deepfakesmaypropagatefalsehoods,harmreputations,and
+Deepfake has increasingly become a digital threat in the aid identity theft by effectively mimicking actual people.
+recentyears.WiththehelpoftoolslikeAIandML,aperson’s Inotherwords,syntheticmediainwhichaperson’simageis
+likeness towards something is manipulated, therefore gen- digitallychangedorreplacedusingartificialintelligenceare
+eratinghyper-realisticmediacalledDeepfake.Anuntrained referredtoasdeepfakes,acombinationofdeeplearning[1]
+eye,cannotdetectthesedeepfake-editedmovies,photos,and andfake.
+audiorecordingsthatcanlookrealistic.Deepfaketechnology Deepfakes’ widespread consequences need immediate
+poses ethical, legal, and security problems by swapping action. The integrity of the information is at risk as
+faces, modifying speech, and producing false information. deepfakes become more sophisticated and common. The
+political usage of deepfakes can influence public opinion,
+undermine democracy, and cause social unrest. AI has
+The associate editor coordinating the review of this manuscript and
+recentlygeneratedandscreeneddeepfakevideosofpolitical
+approvingitforpublicationwasYeon-HoChung .
+2025TheAuthors.ThisworkislicensedunderaCreativeCommonsAttribution4.0License.
+VOLUME13,2025 Formoreinformation,seehttps://creativecommons.org/licenses/by/4.0/ 183557
+=== PAGE 2 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+leaders. These technologies affect public trust and political and facial clues is a common way to identify discrepan-
+stability by using deepfakes to disseminate misleading cies indicating deepfake manipulation [16]. An alternative
+information and distorting voter attitudes [2]. Deepfakes promising strategy is to develop deep learning-based detec-
+may emotionally and psychologically traumatize victims of tionalgorithmstrainedonlargedatasetsofrealandsynthetic
+harassment,cyberbullying[3],andpornographicreprisal[4]. media [17]. Researchers have investigated algorithmic and
+Deepfakesunderminejusticebyalsoerodingdigitalevidence forensicanalytictechniquestodetectproofofmanipulation
+in court. These concerns make efficient detection and in digital media [18]. One of these strategies is to examine
+mitigation techniques essential to protect society as well as metadata, digital artifacts from the deepfake manufacturing
+individualsfromdeepfaketechnology. process, and picture compression artifacts. Also, changes
+Popular deepfake and face-swapping tools include to blockchain technology has made it possible for digital
+Reface [5], MyHeritage [6], DeepFaceLab [7], and Deep- signatures to be tampered with. These signs can be used to
+Faker App [8]. Realistic face swaps in movies and GIFs verifytheaccuracyofvideodataandtodemonstratethatany
+may be implemented quickly using the entertaining Reface unauthorizedchangeshavebeenmade[19].
+software and the user-friendly Deepfakes internet platform. Deepfakemanufacturingtechnologies,ontheotherhand,
+Through the ‘‘Deep Nostalgia’’ function on MyHeritage, are making it much harder to study how to find deep-
+userscananimatevintageimages,bringinghistoricalfigures fakes[20].Therefore,peoplefromdifferentfieldswillhave
+to life. While the Deepfaker app’s intuitive design allows to work together and keep developing new ideas to propose
+novices to create deepfakes, DeepFaceLab’s sophisticated reliable, scalable algorithms that can find deepfake content
+capabilitiesattractacademicsandenthusiasts. andstopitfromspreading.
+Advanced deep learning techniques such as generative Thissurveyaimstocomprehensivelyexamineandassess
+adversarial networks (GANs) [9] and variational auto- various deepfake detection techniques that leverage rPPG.
+encoders (VAEs) [10] are used to make Deepfakes. These The survey aims to evaluate the effectiveness of these
+morecomplexmodels,likeGANswiththeirtwogeneration methodsindistinguishingbetweenrealandmanipulatedcon-
+anddiscriminatorparts,areverygoodatusingfalserepresen- tent,consideringtheiraccuracy,robustness,andapplicability
+tationsthatareveryclosetotherealrepresentationtomake across different scenarios. With deepfakes being developed
+obviouslyfalsestuff,allwhileconstantlycheckingtheirwork withthehelpofadvancedmachinelearninganddeeplearning
+againstrealdata.Autoencodershavealsomadeitpossibleto methodsthatgenerateveryaccuratesyntheticmedia,rPPG-
+rebuildandshrinkpictures,whichletsuscreatenewfacesthat based detection has evolved as a sophisticated approach,
+lookrealfromsmallerones.Thisiseasiertoutilizewhenthe moving beyond early detection methods focused on visual
+quantityofthefileswithimagesandvideosofthetargetgroup artifacts. This survey will also identify key challenges and
+ismassive.Deepfakesrequireintensivetrainingtoaccurately limitationsassociatedwithrPPG-baseddetectiontechniques
+replicatefacialexpressionsandfeatures.Recentresearch[11] andsuggestpotentialavenuesforfutureresearchtoimprove
+indicates the growing maturity of deepfake generation with their performance in the evolving landscape of deepfake
+advanced deep learning architectures like GANs and VAEs, technology.
+emphasizingthenecessityofAI-drivendetectiontechniques rPPG is a recent non-contact technique that enables
+tocountertheirdeceptivecredibility. the extraction of physiological signals such as heart rate,
+After the training process with a broad set of scenarios, which can be detected from peripheral video cameras using
+algorithmsliketheAdvancedface-swappingalgorithmmake facialimages.Thismethod,whichhasreceivedconsiderable
+iteasyforsuchmodelstobeabletoeasilyspotthefeaturesof attentioninthebiomedicalandcomputervisioncommunities,
+thetargetedindividual[12].Thisallowsuserstotapintotheir offers a new way to monitor vital signs without physical
+own creativity to create creative media. Multiple processes touch[21],[22].Lately,theapplicationofrPPGhasexpanded
+of post-processing have been employed to change colors tothemedicalfieldtoquantifybloodoxygensaturationand
+and smoothen out any imperfections in the content; also, heartrate[23]andtopreventspoofing[24].
+weprovidedetailstomakeitlookrealistic.Deepfakesproved In the current landscape of deepfake detection, most
+to be extremely effective, but since they are used so often traditional methods rely on pixel-based features, visual
+that,itwouldbedifficulttodistinguishthemandstayaway inconsistencies, or audio-visual alignment. However, these
+from them. As the process of deciding whether a person is approaches are increasingly vulnerable to the advances
+lying becomes increasingly difficult it is essential to have in generative models that create nearly flawless visual
+functionalsolutions. and temporal consistencies. In contrast, rPPG leverages
+Due to the evolution of the deepfake-generation methods physiological signals—specifically the subtle variations in
+and the convincing nature of these fakes, it is becoming skin color due to the flow of blood —that are inherently
+increasinglychallengingtodetectdeepfakes.Manysolutions difficult to replicate with high fidelity in synthetic media.
+tothischallengehavebeenproposedbyresearchersandengi- Thisisbecausedeepfakealgorithmstypicallyfocusonfacial
+neers using advances in computer vision, machine learning, features and texture synthesis while ignoring the complex,
+and digital forensics [13], [14], [15]. Seeking physiological temporally coherent biological rhythms embedded in real
+183558 VOLUME13,2025
+=== PAGE 3 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+humanfaces.Asaresult,fakevideosoftenexhibitunnatural Traditional forensic methods focus on detecting incon-
+or absent pulse signals, inconsistent heart rate variability, sistencies in images and videos using handcrafted features.
+and uniform rPPG distribution across facial regions. These These approaches include pixel-level analysis, which iden-
+artifacts are largely invisible to human perception but can tifies anomalies such as unnatural blurring, pixelation, and
+be extracted and analyzed through rPPG signal processing. inconsistencies in shadows and reflections [27]. Compres-
+Therefore, rPPG offers a fundamentally different and more sion artifact detection examines differences in compression
+resilient signal domain for detecting deepfakes. It acts as patterns between the original and manipulated content to
+a physiological watermark—something real humanspossess identify tampered areas. Metadata and error-level analysis
+certain characteristics but synthetic avatars often fail to focus on detecting inconsistencies and artifacts left during
+mimic them accurately. By focusing on rPPG, this survey the deepfake creation process. Despite their effectiveness
+addressesanemergingdetectionmodalitythatcouldserveas in certain cases, these methods often fail when faced with
+acornerstoneoffuturemultimodaldetectionframeworks. advanced deepfake generating methods that are capable of
+Inthecurrentgeneration,deepfakeshavebeenconsidered minimizing such artifacts. Models such as MesoNet4 and
+a significant threat to content, as they are created using ResNet-101 [28] and Visual Geometry Group (VGG-19)
+artificial intelligence. Although the rPPG of the body can [29]havebeenutilizedforpixel-levelanalysisanddeepfake
+sense slight changes in the physiological response of a forensic detection. However, the VGG16 model can only
+person, the same signals introduce a new angle to improve extract the image features, but for these techniques to be
+the deepfake detection approach, leveraging physiological successful, classification is also required. An additional
+regularitiestoenhancegeneralizationofdiversedatasetsand model such as ResNet or CNN should be incorporated for
+improve detection robustness beyond pixel-domain features thispurpose.
+[25].Ascanbeseen,rPPGcandetectpulsatilebloodflowand Convolutional Neural Networks (CNNs) and Recurrent
+differentiate between artifacts that emerge during deepfake Neural Networks (RNNs) have immensely contributed to
+generationandareinvisibletothehumaneye[26]. deepfakedetection.Thesemethodsconcentrateondetecting
+RecentstudieshaveconfirmedthatrPPG-basedtechniques intricate patterns that assist in distinguishing between real
+are reliable in spotting authentic or fake videos, primarily and fake media. To scan deepfake videos for spatial incon-
+using blood flow rhythm and physiological signals. This sistencies CNNs are employed. Networks like XceptionNet
+places rPPG in an advantageous position to assist in have been trained on datasets like FaceForensics++(FF++)
+developing new deep learning based techniques for the for classifying deepfakes with high accuracy [30], [31].
+next-generationdeepfakeidentificationofimprovedaccuracy RNNs and Long Short-Term Memory (LSTM) Networks
+andreliability. studytemporalinconsistenciesinfacialmotionandblinking
+The survey paper is organized as follows: Section II behavior since deepfake videos tend to lack natural motion
+presentsaLiteratureReview,summarizingrelevantresearch coherence. New models like Vision Transformers (ViTs)
+in deepfake detection. Section III discusses the Advance- extractlong-rangedependenciesinfacialfeatures,improving
+ments of Computational Methods in Deepfake Generation, the robustness of detection. Notable models include Inter-
+focusingonrecentbreakthroughsinsyntheticmediacreation. pretableSpatial-TemporalVideoTransformer(ISTVT)[32],
+Section IV covers the Advancements in deepfake detection ConvolutionalVisionTransformers(CViT)[33],andHybrid
+techniques, outlining innovations in detecting fake content. CNN-LSTM models [34], which have demonstrated strong
+Section V introduces rPPG, a technique for extracting performanceindetectingdeepfakecontent.
+physiological signals from video. Section VI explores the To improve detection accuracy, multi-modal techniques
+TypesofrPPGMethodsinDeepfakeDetection.SectionVII integrate different modalities such as audio, textual, and
+addresses the challenges in deepfake detection using rPPG. visual data. Audio-visual synchronisation analysis checks
+SectionVIIIlooksatfuturedirectionsforenhancingdeepfake if lip movements match speech audio, as deepfake videos
+detection.Finally,SectionIXconcludesthepaper. often exhibit misalignment [35]. Recently, a prominent
+watermarking technique based on GANs was developed
+to detect proactive facial manipulations [36]. Fusion-based
+II. OVERVIEWOFLITERATUREREVIEW approaches combine multiple detection methods, such as
+Deepfakedetectionhasgainedsignificantattentioninrecent fusing rPPG-based physiological signals with CNN-based
+yearsduetotherapidadvancementsinAIandDeepLearning visual analysis, to enhance robustness against sophisticated
+(DL).Theincreasingrealismofdeepfakemediaposesethical, deepfakes.Advancedmulti-modaldetectionmodelssuchas
+legal, and security threats, necessitating robust detection EfficientNetB4 and Time-Delay Neural Network (TDNN)
+mechanisms. Several approaches have been explored in [31], Vision-Language Pretraining with Gate Fusion (VLP-
+the literature, including traditional image forensics, deep GF) [35], and FakeCatcher [37] have been designed to
+learning-based detection, physiological signal analysis, and integratevariousmodalitiesforimproveddeepfakedetection.
+hybrid techniques. This section classifies and reviews the rPPG is a non-contact method used to measure subtle
+various deepfake detection methods, focusing on their changesinskincolorduetobloodflow.Heartrateandpulse
+effectivenessandcontributionstothefield. signal analysis extracts heartbeat signals from facial videos
+VOLUME13,2025 183559
+=== PAGE 4 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+by detecting periodic variations in skin tone [38]. Several B. EARLYMETHODSINDEEPFAKEGENERATION
+studieshaveshownthatdeepfakevideoslackconsistentheart Historical Context: Deepfake technology originated from
+rate signals, making them distinguishable from real videos. the development of computer graphics and digital image
+Deepfakevideosfrequentlydonotaccuratelyreproducethese processing. Early face swaps were performed manually
+physiologicalsignals,renderingrPPG-basedidentificationa using basic image processing, producing low-quality and
+viable method. The features derived from the rPPG-based unrealisticoutputs.
+on the signal provide explicit information regarding the Thebreakthroughcamewithmachinelearningandneural
+physiologicalbehaviorofheartrate,renderingitanefficient network algorithms in the 2010s, where Eigenfaces and
+tool for deepfake identification [39]. Hybrid rPPG models Principal Component Analysis (PCA) were applied for face
+combine rPPG with CNNs or ViTs to enhance deepfake recognition and swapping, though these methods relied
+detectionbyintegratingbothphysiologicalandvisualincon- on handcrafted features and had low generalisation across
+sistencies. Thus, models such as DeepFakesON-Phys [38], datasets[47].
+simple rPPG-based methods [39], and DeepRhythm [40]
+have demonstrated effectiveness in utilizing physiological C. BASICALGORITHMSANDCHALLENGES
+Early face-swapping methods used geometric transforms
+signalsfordeepfakedetection.
+and color adjustments to map source faces onto target
+Severaldatasetshavebeendevelopedtotrainandevaluate
+images.However,thesemethodsdidnotcaptureanycoherent
+deepfakedetectionmodels.FF++[30]containsmanipulated
+rPPG-based physiological signals, making them inherently
+videos using various deepfake generation methods, serving
+detectablethroughphysiologicalcues.
+as a benchmark for CNN-based detection. Celeb-DF [41]
+is a dataset of high-quality deepfake videos designed
+1) GEOMETRICWARPINGANDCOLORCORRECTION
+to challenge current detection models. DFDC (DeepFake
+Corresponding feature points on the source and target
+Detection Challenge Dataset) [42], developed by Facebook
+images were detected to map the faces, and geometric
+AI in collaboration with academic and industry partners,
+transformations were applied to deform the source face to
+includes diverse deepfake videos with varying degrees of
+thetargetshape.Technicalpreprocessingadjustedskintones
+realism. VIPL-HR [43] is designed explicitly for evaluating
+and lighting conditions between source and target faces.
+rPPG-baseddeepfakedetectiontechniques.
+Such techniques often left tell-tale signs, including seams,
+This literature review classifies and analyses deepfake
+inconsistent skin tones, and unrealistic textures, with low
+detection techniques, emphasizing rPPG-based approaches.
+resolution[48].
+The integration of physiological signal analysis with deep
+learningmethodsoffersapromisingdirectionforimproving
+2) LIGHTINGANDEXPRESSIONHANDLING
+detection accuracy and robustness. By leveraging multi-
+Thesemethodswereineffectiveindealingwithillumination
+modal techniques and continuously updating datasets,
+and pose variations, causing temporal discrepancies and
+researchers can enhance the ability to combat deepfake
+flickereffectsinvideos[49].
+threatseffectively.
+D. ADVANCEMENTSINGANARCHITECTURES
+Generative Adversarial Networks (GANs) are foundational
+III. ADVANCEMENTSOFCOMPUTATIONALMETHODSIN
+techniques in deepfake generation, consisting of a gener-
+DEEPFAKEGENERATION
+ator that creates synthetic data and a discriminator that
+A. INTRODUCTIONTODEEPFAKEGENERATION
+distinguishes between real and fake data. This adversarial
+Deepfakes are synthetic media that involve substituting the
+training aims to produce increasingly realistic outputs,
+source person’s image with another, achieved by means of
+particularly effective in face swapping and high-quality
+complex neural networks like GANs and VAE. Exploration
+imagesynthesis[50].Trainingonlargedatasetsoftargetand
+of deepfakes and their potential threat to face recognition,
+source faces allows GANs to learn expressions, poses, and
+alongwithinitialdetectionstrategies,wasperformedin[44].
+lightingvariationstogeneratedeepfakevideos.
+Furtherworksprovidedexplanationsofhowdifferentarchi-
+The core mechanism of GANs lies in simultaneously
+tecturesfunction[45].
+refiningthegeneratortodeceivethediscriminator,enabling
+Understanding the computational methods used to create
+themodeltolearncomplexdatadistributions.Thegenerator
+deepfakes is crucial, as it enables the establishment of
+anddiscriminatorlossfunctionsaredefinedasfollows[51]:
+reliablemechanismsforbuildingconfidenceindigitalmedia
+and helps formulate policies and laws to guide against L =log(1−D(G(z))) (1)
+G
+misuse[46].Table1presentsacomparativestudyofvarious
+L =−log(D(x))−log(1−D(G(z))) (2)
+D
+computationalmethodsfordeepfakegeneration[1],[7],[8].
+Moreover,thecurrentdeepfakecontentoftenlackscoherent Thecombinedmin-maxobjectiveis[50]:
+r
+d
+P
+e
+P
+te
+G
+ct
+-
+i
+b
+o
+a
+n
+se
+a
+d
+n
+p
+d
+h
+l
+y
+in
+si
+k
+o
+i
+l
+n
+o
+g
+gi
+t
+c
+h
+a
+i
+l
+s
+si
+s
+g
+tu
+n
+d
+a
+y
+ls,
+t
+p
+o
+ro
+p
+v
+h
+i
+y
+d
+s
+i
+i
+n
+o
+g
+lo
+a
+g
+r
+i
+o
+ca
+b
+l
+us
+d
+t
+e
+c
+e
+u
+p
+e
+fa
+f
+k
+o
+e
+r m
+G
+inm
+D
+axE x∼pdata(x) [logD(x)]+E z∼pz(z) [log(1−D(G(z)))]
+forensics. (3)
+183560 VOLUME13,2025
+=== PAGE 5 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+EarlyimprovementslikeDCGANemployedconvolutional where: qφ(z|x) is the approximate posterior distribution
+layers with ReLU in the generator and LeakyReLU in the (encoder),andD istheKullback-Leiblerdivergencefrom
+KL
+discriminator to improve image realism. Despite enabling thepriorp(z).
+high-resolution image generation, DCGANs faced limita- While VAEs generate diverse and realistic outputs, they
+tionssuchasmodecollapseandtraininginstability[52]. donotreplicatethetemporallycoherentblood-flowpatterns
+ProgressiveGrowingofGANs(ProGAN)stabilizedtrain- visible in rPPG signals, making physiological analysis an
+ingbystartingwithlow-resolutionimagesandincrementally effectivedetectioncue.
+increasing to high resolution. This hierarchical learning
+allowed the model to capture coarse-to-fine features and
+3) RECURRENTNEURALNETWORKS(RNNS)
+achievestate-of-the-artquality[53],[54].
+RNNs are designed to process sequential data and are
+StyleGANandStyleGAN2furtheradvancedrealismusing
+particularly suitable for audio and video deepfakes that
+style-based generators and AdaIN for attribute control,
+requiretemporalconsistency.Byretaininginformationfrom
+improving image sharpness and reducing artifacts. These
+previous steps, RNNs can produce sequentially coherent
+architectures remain state-of-the-art for deepfake genera-
+framesoraudiosegmentsfordeepfakesynthesis[58].
+tion[55],[56].
+Their primary limitation is the difficulty in maintaining
+While GANs can now produce photorealistic faces with
+long-term dependencies, leading to degradation in perfor-
+accurate expressions and lighting, they do not reproduce
+manceforlengthysequences.Nevertheless,RNNshavebeen
+coherent physiological signals such as rPPG-based blood
+successfully used in generating realistic speech and video
+flow patterns. This absence of physiological consistency
+sequences.
+provides a critical cue for robust deepfake detection using
+Even though RNN-based deepfakes capture short-term
+rPPG.
+temporal dynamics, they still fail to produce the subtle,
+periodicvariationsinskintonecausedbybloodcirculation.
+E. OTHERCOMPUTATIONALTECHNIQUES These rPPG-based cues can therefore reveal the synthetic
+1) AUTOENCODERS nature of such deepfakes, providing a robust detection
+Autoencoders are neural networks that learn efficient input approach.
+datacoding,consistingofanencoderthatmapstheinputto
+a latent representation and a decoder that reconstructs the
+F. DEEPLEARNINGFRAMEWORKSANDTOOLS
+input from that representation. In deepfake generation, they
+Deep learning frameworks are essential for implementing
+are primarily used for face swapping, where an input face
+and training deepfake generation models, with TensorFlow,
+is encoded into a latent vector and reconstructed as another
+PyTorch, and Keras being widely used. TensorFlow [59],
+individual’sface.
+an open-source framework, provides high-level APIs for
+Their limitation lies in the fixed-dimensional input and
+model creation and deployment, enabling researchers to
+output,makingitchallengingtohandlevaryingfacialorien-
+explorearchitecturesandoptimizeworkflows.PyTorch[60]
+tations and expressions. Despite this, autoencoders laid the
+is valued for its dynamic computation graph, usability,
+foundationfordeepfakegenerationbyprovidingaframework
+and libraries like Hydra that support iterative debugging.
+for encoding and decoding facial data efficiently. However,
+Keras[61],builtonTensorFlow,simplifiesdeeplearningwith
+autoencoder-generated deepfakes lack natural physiological
+anintuitivedesignandfastmodelconstruction.
+coherence, particularly rPPG-based signals, which can be
+SpecialisedtoolssuchasSimSwap++[62],FaceSwap[63],
+leveragedfordetection.
+and DeepArt complement these frameworks. SimSwap++
+integratesadaptiveidentitypreservationwithamulti-attribute
+2) VARIATIONALAUTOENCODERS(VAES)
+encoder for high-quality face swaps. FaceSwap supports
+VAEs extend autoencoders by introducing probabilistic
+detection, alignment, and realistic merging, while remain-
+latentrepresentations,allowingcontrolledanddiverseimage
+ing beginner-friendly. DeepArt, primarily for artistic style
+generation.Indeepfakeapplications,VAEsinterpolateinthe
+transfer,demonstratesdeeplearning’screativepotentialand
+latent space to synthesize non-nonexistent realistic faces by
+improves the quality of synthetic outputs. Together, these
+combiningfeaturesfrommultiplesources[57].
+frameworks and tools streamline deepfake generation and
+Unlike standard autoencoders that produce a single
+broadenaccessibility.
+deterministic output, VAEs sample from a Gaussian latent
+distribution, enabling the generation of multiple plausible
+G. DEEPFAKEGENERATIONUSINGRPPGSIGNALS
+variants of the same individual. This makes VAEs suitable
+rPPG is effective in synthesizing physiological signals
+forcreatingdiverseinstancesofaperson’sfaceundervarying
+like pulsating signals from facial videos, thus making it
+conditions.
+possible to synthesize deepfakes. Due to changes in blood
+The ELBO objective function, which VAEs optimize,
+flow that affect skin tone, rPPG allows the capture of
+isgiveninEquation4[10]:
+photoplethysmographic signals from video for deepfake
+Lθ,φ(x)=logpθ(x)−D
+KL
+(cid:0) qφ(z|x)∥pθ(z|x) (cid:1) (4) generationpipelines.Thisintegrationenablesonetogenerate
+VOLUME13,2025 183561
+=== PAGE 6 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+synthetic videos that mimic the target subject in both looks 1) CONVOLUTIONALNEURALNETWORKS(CNNS)
+and even the physiological one, making it even harder to CNNs learn spatial features from images to identify defects
+detectthem[64]. in deepfakes, such as uneven textures, unrealistic lighting,
+Improving deep learning and computer vision enables or blending artifacts [27]. They process frames through
+thegenerationofdeepfakeswithrPPGsignalincorporation. convolutional filters, pooling, and fully connected layers
+Advanced neural networks can analyze facial videos and to extract hierarchical features and classify content as
+produce corresponding rPPG signals aligned with the video real or fake. Trained on large datasets of authentic and
+content to create physiologically realistic deepfakes [65]. synthetic images, CNNs can detect manipulations such
+Babaei et al. highlighted how such advancements com- as face swaps, expression changes, and video synthesis.
+plicate traditional detection methods in the context of Pixel-level variations around sensitive regions like lips and
+generative AI [66]. This approach is particularly relevant eyes—wheredeepfakealgorithmsstruggle—arekeytotheir
+in medical simulations and digital modeling of human effectiveness[71].
+behavior[67]. Despite their success, CNNs focus on visual cues
+However, generating realistic rPPG signals faces chal- and remain vulnerable to next-generation deepfakes that
+lenges under varying lighting, facial expressions, and video exhibit high spatial fidelity. Integrating rPPG signals into
+quality.Futureresearchfocusesonenhancingthereliability CNN-basedpipelinesenhancesrobustness,asrPPGcaptures
+ofrPPG-baseddeepfakegenerationtoensurephysiologically subtle, periodic skin-color variations linked to real blood
+consistentoutputs. circulation—patterns nearly impossible to replicate in syn-
+theticmedia.
+IV. EVOLUTIONOFDEEPFAKEDETECTIONTECHNIQUES
+A. EARLYDETECTIONMETHODS 2) TEMPORALANALYSIS
+1) EYEMOVEMENT Forvideo-baseddeepfakes,temporalanalysisexamineshow
+Early deepfake detection relied on gaze direction and blink features persist across frames, identifying inconsistencies
+rates, as these natural eye behaviors are challenging to that arise because frame-to-frame synthesis is challenging.
+replicate in synthetic media [68]. Although effective in Deepfakes often exhibit sudden lighting changes, unnatural
+some cases, these methods are vulnerable to improvements motions, and inconsistent facial expressions [72]. Tracking
+in generative models and do not consider physiological faciallandmarksoranalyzingeyeandlipmovementsacross
+signalssuchasrPPG,whichprovideamoreresilientcuefor framescanrevealsubtlemanipulations.
+detection. The process involves breaking a video into frames and
+examining transitions between them. Motion estimation
+2) VISUALARTIFACTS techniquesevaluatepixelflowstoverifywhethertheyfollow
+Another early approach identified inconsistencies in video natural patterns [73]. Combining spatial and temporal anal-
+textures,includingflickering,unnaturalskintones,oruneven ysisstrengthensdeepfakedetection,asitcapturesanomalies
+lightingandshadows.Suchartifactsservedaskeyindicators thatstaticframeanalysismaymiss.
+for marking probable fake content [69]. However, as visual
+qualityimproves,thesecuesbecomelessreliablecompared C. ADVANCEDINTEGRATIONS
+tophysiologicalanalysisbasedonrPPGsignals. 1) MULTI-MODALDETECTION
+Asdeepfaketechnologyhasadvanced,morecomprehensive
+3) PIXELAVERAGINGOFTHEHUMANFACE detection methods have become essential. Multi-modal
+Pixel-level analysis compares the distribution of pixels in detectionintegratesaudio,visual,andtextualcuestoimprove
+suspicious faces to genuine ones, identifying disparities accuracy [74]. For instance, subtle mismatches between
+that indicate manipulation [70]. While useful for early lip movements and audio or inconsistencies in speech
+detection, pixel analysis does not capture subtle blood-flow patterns can expose deepfakes. By cross-referencing mul-
+variationsthatrPPGcanreveal,offeringadeeperverification tiple data streams, multi-modal systems capture anomalies
+layer. that single-modal methods may overlook, particularly in
+high-quality fakes designed to bypass visual-only detec-
+tors [75]. Integrating rPPG into multi-modal detection
+B. MACHINELEARNINGANDDEEPLEARNING
+enhances robustness by adding a physiological verification
+APPROACHES
+layer.Evenifvisualandaudiocuesappearauthentic,alack
+ML and DL techniques analyze large datasets to identify
+ofcoherentblood-flowsignalsinthefaceexposedeepfakes.
+patterns distinguishing real from manipulated content. With
+moredata,thesemodelsimproveinaccuracyandrobustness.
+Detection is commonly performed using Convolutional 2) GANSFORDETECTION
+Neural Networks (CNNs) and temporal analysis, with GANs, used initially to generate deepfakes, have also been
+methods summarized in Table 1 and further detailed in repurposed for detection. In this context, the discriminator
+Table2. is trained to identify subtle differences between real and
+183562 VOLUME13,2025
+=== PAGE 7 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+TABLE1. Comparisonofcomputationalmethodsfordeepfakegeneration.
+synthetic content [76]. Through adversarial training, the featuring 59 celebrities, with 590 real and 5,049 fake
+discriminator continuously improves as generators attempt videos. Its emphasis on realistic manipulations makes it
+toproducemoreconvincingfakes[77].Thisdynamicpush- a critical benchmark for developing models capable of
+and-pull ensures detection models remain effective against handling professional-grade content. However, like FF++,
+evolvingdeepfakes. Celeb-DFfocusespurelyonvisualrealismwithoutproviding
+Notable applications include Reality Defender, which physiological ground-truth data. This gap highlights the
+analyzes video calls in real-time to detect deepfakes [78]. need for datasets that include rPPG signals to support
+GAN-based detection models can also be fine-tuned for physiologicallyawaredeepfakedetection.
+specific manipulation types, including face swaps, voice Overall,advanceddetectionmethodsanddatasetshavesig-
+alterations, and full-body avatars, making them highly nificantlyimproveddeepfakedetectionbutremainprimarily
+adaptableforcontentmoderationandforensics.Despitethis reliantonvisualandauditorycues.Thislimitationmotivates
+adaptability, most GAN-based detectors rely on visual or the exploration of Remote Photoplethysmography (rPPG),
+statistical cues alone. Incorporating rPPG signals into GAN whichleveragessubtleskincolorvariationsfrombloodflow
+detectionframeworkscanenhancereliability,asphysiologi- as a physiological watermark for detecting synthetic media.
+calconsistencyisextremelydifficulttofalsifyingenerative ThefollowingsectionintroducesrPPG,itsprinciples,andits
+models. potentialindeepfakedetection.
+D. SUITABLEDATASETSFORDEEPFAKEDETECTION
+V. INTRODUCTIONTOREMOTE
+1) FACEFORENSICS++DATASET PHOTOPLETHYSMOGRAPHY
+A widely used dataset for evaluating deepfake detection A. EARLIERMETHODSFORMEASURINGPHYSIOLOGICAL
+algorithms is FaceForensics++ (FF++) [30]. This dataset FEATURES
+includes videos that are both authentic and altered, which Comprehending physiological characteristics is essential
+are produced by techniques like DeepFakes, Face2Face, for the diagnosis, monitoring, and treatment of various
+FaceSwap,andNeuralTextures.Thisdatasetactsasareliable health disorders. Conventional techniques, such as pulse
+standardforcreatingandevaluatingmodels,asthesevideos
+oximetry [79], Doppler ultrasonography [80], and electro-
+come from authentic contexts like interviews. The absence
+cardiography (ECG) [81], have historically served as the
+of physiological signals like rPPG in FF++ hinders its
+foundation of clinical practice, providing vital insights into
+applicability for creating the next-generation physiological
+respiratory and cardiovascular health. The ECG, introduced
+detection techniques, despite the fact that it offers a wide
+in the early twentieth century, revolutionised diagnostics by
+rangeofvisualmanipulations.
+givinganon-invasiveandcost-effectivemethodofdetecting
+arrhythmias and ischemic heart diseases. ECG is now a
+2) CELEB-DFDATASET criticaltoolinclinicalsettings,anditisusedinstresstesting
+The Celeb-DF dataset targets high-quality deepfakes that and intensive care units. For continuous remote monitoring
+are challenging to detect [41]. It consists of 5,639 videos ofheartissuesithasbeenintegratedintotelehealthsystems.
+VOLUME13,2025 183563
+=== PAGE 8 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+TABLE2. Overviewofdeepfakedetectiontechniques,datasets,andtheiranalysis.
+Inordertodiagnosevascularabnormalitiesandtoimprove ultrasonographyhasbeenused,whichhelpsinmeasuringthe
+post-surgical outcomes and stroke prevention, Doppler velocityofbloodflow.Thismethodhasalsobeenwidelyused
+183564 VOLUME13,2025
+=== PAGE 9 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+toassessfetalwell-beinginprenatalcare,thusdemonstrating direct contact [82]. Below are a few applications of this
+its versatility. In recent years, similarly pulse oximetry has methodinthemedicaldomain:
+developed as an important tool for determining the oxygen
+saturationinblood,especiallyinemergencyandcriticalcare
+1) CARDIOVASCULARMONITORING
+settings.
+rPPG enables continuous assessment of heart rate and
+Despite these methods having significantly improved
+bloodpressure,facilitatingearlydetectionofcardiovascular
+healthcarebyprovidingreliableandnon-invasivediagnostic
+abnormalities[83].Forinstance,astudydemonstratedtheuse
+options,theyhavetheirownlimitations.Pulseoxiometryaids
+ofrPPGtoestimateheartrateandbloodpressurefromfacial
+in the demonstration of how environmental variables such
+videos, highlighting its potential in cardiovascular health
+as illumination and pigmentation affect the accuracy. For
+monitoring[84].
+long-termmonitoring,manyoftheconventionalapproaches
+lack mobility and real-time functionality. Despite these
+limitations,theyhavelaidasolidfoundationforthecurrent 2) RESPIRATORYRATEMEASUREMENT
+advancesinphysiologicalmonitoring,thereforeemphasizing rPPG has been employed to measure respiratory rates,
+the need for discoveries that address these obstacles and offering a non-contact alternative to traditional methods.
+accommodatevariousdiversepopulations. A hospital-based trial confirmed the accuracy of rPPG
+in remotely measuring respiratory rate, underscoring its
+B. RPPG applicabilityinclinicalsettings[85].
+In the recent years, rPPG has developed as an essential
+method for physiological monitoring. A distinct feature is 3) STRESSANDEMOTIONDETECTION
+that, rPPG is based on the hemodynamic response that Byanalyzingvariationsinbloodflow,rPPGcanassessstress
+is associated with the changes in the volume of blood levelsandemotionalstates,providingvaluableinsightsinto
+beneath the skin, unlike traditional methods such as pulse mental health. This capability is beneficial in psychiatric
+oximetry or cPPG, or invasive procedures such as catheter- evaluationsandstressmanagementinterventions[86].
+basedassessments.Microvascularbloodflowcausesminute
+changesintheabsorptionandreflectionoflight,rPPGuses
+4) SLEEPMONITORING
+the optical properties of skin tissue to detect these changes.
+rPPG facilitates unobtrusive monitoring of sleep patterns,
+With the help of the color differences that is caused by
+aiding in the diagnosis and management of sleep disorders.
+pulsatile blood flow that are retrieved using sophisticated
+Itsapplicationinsleepstudiesoffersalessinvasiveapproach
+signal processing techniques and algorithms, these changes
+comparedtotraditionalpolysomnography[87].
+are detected through the analysis of real-time video inputs.
+With the shift in the healthcare paradigm to remote, non-
+This functionality is used especially in situations where
+invasive therapies, rPPG is poised to change physiological
+physicalcontactisimpossible,suchastelemedicineorduring
+monitoring. It offers a realistic alternative to traditional
+infectiousdiseaseoutbreaks,whereacriticalstepistolimit
+approaches by allowing for cost-effective, scalable, and
+thecontaminationrisk.
+user-friendly diagnostics, thereby addressing limitations in
+rPPG offers various advantages over traditional physio-
+portability,accessibility,andmultimodaldatacollection.
+logicaltestingprocedures.Duetothenon-contactcapability
+These applications highlight the versatility of rPPG,
+the hazards of skin irritation, pain, and infection is reduced
+making it a promising tool not only for healthcare but also
+that is associated with contact-based instruments such as
+foradvanceddetectionsystemssuchasdeepfakeforensic.
+rPPG probes and pulse oximeters. It is ideal to use rPPG
+forlong-termhealthmonitoringwithoutdisruptingeveryday
+activities. In order to maximize the accessibility and ease, C. METHODOLOGY
+integration of rPPG sensors into everyday gadgets like The rPPG approach includes several key stages: signal
+webcams,telephones,andsmartwatchesisdone. capture,preprocessing,extraction,andanalysis.
+rPPGmaybeusedtosimultaneouslymonitoravarietyof Figure1depictsthecompleteprocessingpipelineforheart
+physiological markers, which include heart rate, respiratory rateestimationusingrPPG,asdescribedin[88]and[89].This
+rate, and heart rate variability (HRV), this offers a compre- pipelineisemployedduringthepost-traininginferencestage
+hensive evaluation that outperforms the previous methods. to process new video input and estimate heart rate. Signal
+Due to this, rPPG is an essential tool for applications that acquisition is the process of recording a subject’s face or
+require real-time, multidimensional analysis, which include otherexposedskinregionswithavideocamera,usuallyunder
+stressmonitoring,fitnesstracking,andcardiovascularhealth regulatedlightingconditions.Regulatedilluminationreduces
+assessment. In order to ensure consistent performance even the impact of external light variations, ensuring that the
+underpoorlightingconditionsorinthepresencesofmotion datacollectedmainlyrepresentsphysiologicalchanges.The
+anomalies,high-resolutiondatafromvideostreamsisused. camera’sred,green,andblue(RGB)channelsareanalysedto
+This method has gained significant attention in medical discoverminorvariationsinskincolorassociatedwithblood
+applications due to its ability to monitor vital signs without volumefluctuationsduringthecardiaccycle[89].
+VOLUME13,2025 183565
+=== PAGE 10 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+FIGURE1. HeartrateestimationpipelineandevaluationinrPPGanalysis.
+During the preprocessing step, facial landmark identifi- For robustness, the Motion Compensation and Light-
+cation algorithms, notably MediaPipe, are used to identify ing Compensation approaches are critical in minimising
+Regions of Interest (ROIs), such as the forehead or environmental and subject-induced fluctuations. Adaptive
+cheeks[88],[90],[91],[92].Followingtheidentificationof filtering and color space Transformation are exam-
+theseROIs,theaverageintensityvaluesoftheRGBchannels ples of lighting compensation techniques, while opti-
+aredeterminedforeachframe[91].Thisaggregationreduces cal flow [98] and face tracking fall under Motion
+randomnoiseandhighlightsgeneralcolorchangesrelatedto Compensation Techniques. These strategies improve the
+bloodflow[88].TheRGBsignalsaremodifiedtominimize dependability of rPPG in dynamic and uncontrolled
+distortionscausedbymobilityandambientlightingfluctua- situations.
+tions,resultinginsignalsthatprimarilyreflectphysiological PCA reduces dimensionality by transforming data into
+variations. uncorrelated principal components. The steps are given in
+Signal extraction involves dividing continuous RGB sig- Equations5,6,and7asdescribedin[95].
+nalsintoshorterintervals,usuallylasting10seconds,foreffi-
+1
+cientanalysis[92].Eachportionisbandpassfilteredtofind C= XTX (5)
+n−1
+the frequency components that correspond to physiological
+signals.Thefrequencyrangeiscarefullychosentomaintain whereXisthemean-centereddatamatrix,andnisthenumber
+components related to heart rate (0.7-3Hz) and respiration ofobservations.
+rate (0.1-0.5 Hz), while also removing low-frequency drift
+CV=V(cid:51) (6)
+andhigh-frequencynoise.
+Thepre-processedsignalsaretransferredtothefrequency whereVisthematrixofeigenvectors,and(cid:51)isthediagonal
+domainusingmethodslikeWelch’sPowerSpectralDensity matrixofeigenvalues.
+Estimation or the Fast Fourier Transform (FFT) [93]. This
+adjustment makes it easier to determine the prominent Z=XV (7)
+frequencies linked with physiological factors. According to
+whereZistheprojecteddatamatrix.
+studies, the green channel has the most correlation with
+ICAseparatesmixedsignalsintoindependentcomponents.
+variations in blood volume, and its most important peak
+ThestepsaregiveninEquations8and9of[94].
+in the frequency spectrum is used to measure heart rate
+[91],[93]. X=SA (8)
+TheclassificationofdifferentrPPGtechniquesinFigure2
+where X is the observed signals matrix, S is the matrix of
+depictsthevarioustechniquesusedinremotePhotoplethys-
+independentcomponents,andAisthemixingmatrix.
+mography as illustrated in [88], [90], and [91]. Signal
+extractionmethodsandproceduresforprovidingrobustness S=XW (9)
+against the motion and lighting circumstances fall into two
+basiccategories.Signal extractionmethodsarefurtherclas- whereWistheseparatingmatrix.
+sifiedastraditionalsignalprocessingtechniquesandmachine Table3presentsacompleteoverviewofsignalextraction
+learningordeeplearning-basedmethodologies.Conventional methods, distinguishing between traditional signal process-
+methods,likeIndependentComponentAnalysis(ICA)[94], ing approaches and machine learning-based methods [1],
+PCA [95], and the Chrominance-based rPPG (CHROM) [21],[22],[93].Eachstrategyisassessedusingitsstrengths,
+method [96], are well-known for their simplicity and com- limitations, and usual performance indicators. Classical
+putational efficiency. Machine learning and deep learning approaches like ICA and PCA excel at computational
+techniques, such as supervised learning [45], Convolutional efficiency and interpretability, but they might suffer from
+Neural Networks (CNNs), and Recurrent Neural Networks nonlinearities and noise. In contrast, machine learning, and
+(RNNs),provideadaptabilityandprecisionwhenextracting deep learning algorithms, such as CNNs and RNNs, are
+physiologicalsignals[97]. more adaptable and accurate at extracting physiological
+183566 VOLUME13,2025
+=== PAGE 11 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+FIGURE2. TaxonomyofrPPGtechniques.
+TABLE3. OverviewoftechniquesofrPPG.
+signals from complicated video data. Motion Compensa- Lighting Compensation Techniques handle the issues
+tion Techniques, such as Optical Flow and face tracking, presented by shifting lighting conditions. Adaptive filtering
+are critical for assuring the stability of the Region of and color space Transformation dynamically alter the
+Interest (ROI) and correct signal extraction during subject signal processing pipeline to ensure signal integrity in
+motion. These solutions reduce the negative impacts of varying illumination conditions. These strategies improve
+motion artifacts by dynamically adjusting ROI position and the signal-to-noise ratio, preserving the accuracy of derived
+orientation. physiologicalmeasures.
+VOLUME13,2025 183567
+=== PAGE 12 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+personalvariations[108].Thismethodleveragestheunique
+capabilitiesofrPPGtoidentifyDeepFakevideosbyutilising
+physiologicalsignalstochallengefakereplication.Figure3
+representstheconceptualworkflowofrPPGbaseddeepfake
+detection,thisillustratesaparallelprocessingarchitectureas
+detailedin[38]and[40].
+Deepfake detection’s rPPG technique starts with high-
+resolution video frames of the subject’s face. Good signal
+extractiondependsonconstantilluminationandlow-motion
+blur.ROIsandActionUnits(AUs),suchasthenose,cheeks,
+or forehead, are chosen based on where blood flow is most
+noticeable. These ROIs concentrate on locations with high
+rPPG signals, improving signal extraction accuracy [65].
+Pixel intensity fluctuations inside these ROIs are monitored
+overtimetorecordtheperiodicchangesrelatedtobreathing
+andheartbeat.
+Temporal filtering methods, such as moving average
+FIGURE3. ThemethodologyofhowrPPGisusedindeepfakedetection filters or adaptive filtering, improve signal extraction accu-
+showcasingitssignalextractionandprocessing. racy [109]. These methods improve the basic physiological
+signals and assist in reducing noise. The rPPG signal is
+thenisolatedfromothernoisesourcesusingadvancedsignal
+It also thoroughly evaluates different strategies, offering
+decomposition techniques such as ICA or PCA, thereby
+a comparative context for understanding their benefits and
+separatingthephysiologicalsignalfromartifactsbroughton
+drawbacks.
+byheadmovementsorchangesinillumination.
+FFT [110], among other methods, converts the isolated
+VI. TYPESOFRPPGEXISTINDEEPFAKESDETECTION rPPGsignalintothefrequencydomain.Thismetamorphosis
+RPPG’s ability to spot Deepfake videos is an important
+clearly shows the physiological cycles by helping to detect
+advance in multimedia forensics [100], which uses bodily theuniquefrequencycomponentsofbreathingandpulse.The
+signs to differentiate between real and fake face video peak in the frequency-transformed signal—which is related
+data. This part examines how rPPG has evolved over time
+to individual heartbeats—is found using algorithms [111].
+to address increasingly sophisticated Deepfake technolo-
+A dependable heart rate estimate depends on accurate peak
+gies[101].RPPGlooksattinychangesinskincolor,which detection. Furthermore, the frequency analysis points to
+show pulse and breathing, to develop a new way to make the slower changes linked to breathing, thus offering a
+DeepFakedetectionsystemsmoreaccurateandreliable. whole picture of the physiological signals in the video
+data[112].
+A. METHODOLOGYFOLLOWED:SIGNALEXTRACTION Finally,theobtainedrPPGsignalsarevalidatedtoguaran-
+ANDPROCESSING teetheirlegitimacy.Thisentailsverifyingtheexistenceofreal
+Using rPPG in Deepfake detection requires capturing facial physiologicalrhythmsbycross-referencingwithrecognised
+videodatacollectingphysiologicalsignals[90],[102],[103], physiologicalcriteriaorusingcontroldata[113].Calibration
+andemployingcutting-edgeprocessingmethods[104]todis- methods offset any variances in camera settings, lighting
+tinguish manipulated from true data. High-resolution video conditions,orpersonalskintone.Thisstageguaranteesthat
+frames ensure adequate observation of minute variations the rPPG model offers consistent and reliable results under
+in skin color caused by heartbeat cycles [105]. Certain many conditions, strengthening the DeepFake detection
+ROIs [106] on the face—like the eyes and other parts of system.
+the face, are found for the best signal extraction. Tracking
+pixelintensityfluctuationsthroughouttimeinsidetheseROIs
+revealsperiodicchangeslinkedwithheartbeatandbreathing B. COMPARISONSOFTHEMODELSRESULTS
+using dynamic signal analysis. Temporal filtering [107] As shown in Table 4 DeepPhys demonstrated a strong
+and signal decomposition are advanced signal processing ability to identify physiological signals in face video. With
+methods used to improve the rPPG signal and lower noise a mean absolute error (MAE) of 1.2 beats per minute
+fromexternalfactorssuchasheadmotionsandillumination (bpm) for heart rate and 0.5 breaths per minute (bpm) for
+changes.Afterthat,theisolatedsignalsareexaminedinthe respiration rate, the model efficiently recovered heart rate
+frequencydomainfordistincttrendsofactualphysiological and respiration rate information with high accuracy. The
+activity. Last but not least, the stages of validation and model’s resilience in real-world situations was shown by
+calibration guarantee the dependability and correctness of constant performance under several lighting conditions and
+the obtained signals by considering ambient variables and facial expressions. DeepPhys, convolutional especially in
+183568 VOLUME13,2025
+=== PAGE 13 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+TABLE4. Overviewofdeeplearningmodelsforremotephysiologicalmeasurementfromvideoframes.
+noisy situations, outperformed various baseline techniques, image-based approaches. DeepPhys still struggles in very
+includingconventionalimage-basedsystems. low-light areas and with non-frontal facial orientations,
+DeepPhys’s success may be ascribed to its utilisation of even though it works well under many circumstances.
+temporal sequence analysis and deep convolutional neural Futureresearchmightconcentrateonimprovingitsresilience
+networks. The model can more successfully detect minor in these demanding conditions by using more sophis-
+physiological changes by using both spatial and temporal ticated image processing methods or multimodal data
+aspects from face recordings than by using stationary integration.
+VOLUME13,2025 183569
+=== PAGE 14 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+TABLE5. FeaturesusedinrPPG-baseddeepfakedetection.
+Table 5 provides an overview of key features used in health as it is really excellent in detecting consistent
+rPPG-baseddeepfakedetectiontechniques.Ithighlightshow problems. Still, the incoming data’s calibre and degree of
+temporal patterns, pulse amplitude, heart rate, frequency detail might cause delays. If you add additional elements
+analysis,andspatialvariationsofrPPGsignalsareanalysed or utilize better data, you may notice little variations in the
+toidentifyinconsistenciesinsyntheticvideos.Thesefeatures beat more easily. Researchers can investigate ways to mix
+focus on detecting subtle physiological cues, which are DeepRhythmwithothertestinginstrumentsgoingforwardto
+difficulttoaccuratelyreplicateindeepfakecontent. obtainabetterpictureofcardiacconditions.
+PulseEditmademajorprogressingeneratingandmanipu-
+latingpulsesignalsfromfacefilms.Comparedtogroundtruth C. COMPARATIVEEVIDENCEFORRPPG-BASED
+data, the model produced reasonable pulse waves with a SUPERIORITYINDEEPFAKEDETECTION
+correlationvalueof0.85.PulseEditalsoeffectivelychanged Conventionaldeepfakedetectionmethodsutilizedvisualarti-
+pulsesignalstofitdesiredproperties,includingchangingthe facts, pixel-level features, and audio-visual synchronization
+pulse rate or amplitude with minimal artifacts. The model’s to detect original and manipulated content. Early CNN and
+adaptability was shown by evaluations of its performance LSTM-basedmethodswererobust,withreportedaccuracies
+across many datasets, including those with varied ethnic in the range of 85–95% on benchmark collections like
+originsandagegroups. FaceForensics++ and Celeb-DF [27], [71], [74]. Multi-
+PulseEdit’s strength is its ability to change pulse signals modalmethodslikeEfficientNetB4withTime-DelayNeural
+while preserving the natural appearance of facial footage. Networks(TDNN)areslightlybetterat94.6%onDFDC[31].
+Thebasicgenerativemethodologyallowsperfectcontrolover These methods suffer from serious performance loss for
+thepulsecharacteristicsbytheuseofmoderndeeplearning high-quality deepfakes or adversarial compression videos
+techniques. This feature is especially beneficial in medical since they are based on detectable pixel inconsistencies
+education and virtual reality, where exact physiological andtemporalmisalignmentsbydesign,whichcontemporary
+signalsarerequired.Still,theperformanceofthemodelmay generative models and post-processing techniques remove
+be influenced by various facial expressions and occlusions. more.
+Bymeansofmorecomprehensivetrainingsetsorimproved Conversely, rPPG-based detection takes advantage of
+featureextractionmethods,increasingtheabilityofthemodel involuntaryphysiologicalskincolorvariationsresultingfrom
+tohandlesuchoscillationsmayassistinsignificantlyraising blood flow as a biological watermark, hard for generative
+itsrelevanceevenmore. models to replicate with precision. Empirical evidence
+Furthermore, it was discovered that DeepRhythm was fromseveralstate-of-the-artworksshowsconsistentlybetter
+quite adept at identifying and examining rhythmic patterns detectionperformanceofrPPG-basedmodels,especiallyon
+in physical data. With a sensitivity of 0.89 and an accuracy difficult cases. DeepFakesON-Phys combines convolutional
+of 0.91, DeepRhythm successfully detected patterns and attention networks with rPPG-based extraction of heart
+consistent issues in HRV data, achieving a 92% overall rate and achieves 99.9% AUC on Celeb-DF and 98.2%
+success rate in differentiating between normal and aberrant on DFDC Preview [38]. Wu et al. use mask-guided local
+rhythmicpatterns.Themodelcontainedthoroughvisualsof attentionwithatemporaltransformertodetectrPPG-driven
+rhythmic patterns, in addition to allowing one to examine spatio-temporal artifacts and exhibit 99.55% accuracy for
+bodydata.DeepRhythmperformswellasitsuniquestructure DeepFakesand98.33%forNeuralTextures[116].FakeTrans-
+is designed for rhythm analysis. Mixing recurrent and former enhances weak rPPG signals with Eulerian video
+convolutional neural networks captures both temporal and magnificationbeforeencodingwithavisiontransformerand
+spectral aspects. The model may be used to monitor heart attainsnearly99%accuracyforFace2Face,DeepFakes,and
+183570 VOLUME13,2025
+=== PAGE 15 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+FaceSwapmanipulations[117].DeepRhythm,whichattacks 27 participants and provides synchronised physiological
+the heartbeat rhythm coherence with dual spatial-temporal signals,suchasECGandPPG,whichserveasgroundtruth
+attention,attains98%accuracyonlargetestsets[40]. for heart rate and variability analysis. The recordings were
+These numerical results repeatedly surpass the perfor- conducted under controlled conditions, with participants
+manceceilingtypicallyreportedforconventionalCNN-and seatedwhileviewingemotion-evokingstimuli.Alongsidethe
+LSTM-based detectors [69], as well as recent multimodal facialvideos,thedatasetalsoincludesadditionalmodalities
+systems[75],whichtendtosaturateat92–95%underdifficult like audio recordings and eye-gaze tracking. MAHNOB-
+conditions [70]. In addition, rPPG-based methods exhibit HCI’s controlled environment and high-quality annotations
+excellent generalizability to unseen types of manipulation make it an ideal benchmark for training and evaluating
+due to the universal and involuntary nature of physiological rPPG algorithms. For deepfake detection, the dataset’s
+signals. FakeCatcher [37] and ETA-rPPGNet [118] studies clean and well-annotated data enables researchers to focus
+also show rPPG-based detection remains robust against on identifying subtle physiological discrepancies, such as
+differentilluminations,minorheadmovement,andcompres- irregularheartratevariability,whichareoftenoverlookedin
+sion,underwhichartifact-baseddetectionfails. manipulatedvideos.
+rPPG-baseddeepfakedetectionhasbeendemonstratedto Together,theVIPL-HRandMAHNOB-HCIdatasetsoffer
+bemorecompetitiveorbetterthantraditionalapproachesin complementary benefits. While VIPL-HR introduces real-
+theliterature,asitprovidesimprovedaccuracyandenhanced world complexities like motion and lighting variations,
+robustness to adversarial deepfakes. rPPG makes the foun- MAHNOB-HCIprovidesacontrolledenvironmentforfine-
+dationfornext-generation,generalizable,andtamper-evident tuningalgorithms.Utilisingthesedatasetsintandemallows
+deepfakeforensicsasitactsasaphysiologicalauthentication researchers to build robust rPPG-based systems that can
+framework. effectivelydetectdeepfakes,evenindiverseandchallenging
+While these results highlight the clear advantages and scenarios. These resources play a crucial role in advancing
+growing maturity of rPPG-based deepfake detection, they thereliabilityandscalabilityofphysiologicalsignalanalysis
+also undermine the need to address various challenges such inbothmedicalandforensicapplications.
+assignalsensitivitytomotion,lightingvariations,anddataset
+diversity,whicharediscussedinthefollowingsection. VII. CHALLENGESINDEEPFAKEDETECTIONUSINGRPPG
+Thecurrentdeepfakedetectionalgorithms,particularlythose
+that use rPPG, have few drawbacks. These challenges
+D. DATASETSSUITABLEFORDEEPFAKEDETECTIONWITH
+are divided into three categories: technical limitations,
+RPPG
+generalisationandrobustnessissues,anddataandapplication
+1) VIPL-HRDATASET
+challenges.
+The VIPL-HR dataset is a comprehensive resource for
+rPPG research and heart rate estimation [43]. It consists
+A. TECHNICALLIMITATIONS
+of 2,378 video recordings collected from 107 participants.
+The detection of physiological signals utilising rPPG is
+The dataset is designed to simulate real-world scenarios by
+extremely sensitive to ambient conditions like lighting and
+incorporating diverse conditions, including varying illumi-
+motionartifacts,whichconsiderablyimpairthedependability
+nation, head movements, and a wide range of skin tones.
+of the retrieved signals. Techniques such as temporal
+Additionally, the recordings were captured using multiple
+aggregation, critical for recording physiological trends over
+devices such as webcams and smartphones, allowing for
+videoframes,struggletomaintainsignalqualityintheface
+cross-device validation of rPPG algorithms. To provide a
+of changing illumination conditions and subject mobility.
+reliablebenchmark,theVIPL-HRdatasetusesground-truth
+The extensive temporal integration necessary for rPPG
+physiological signals, such as heart rate measurements,
+analysiscreatescomputerconstraints,particularlyindynamic
+obtained using contact-based medical devices like pulse
+situations.
+oximeters. This dataset has proven particularly useful in
+Video compression, a typical storage and transmission
+evaluatingtherobustnessofrPPGmethodsunderchallenging
+technique,exacerbatestheseproblemsbycreatingchromatic
+conditions, such as motion artifacts or fluctuating lighting.
+distortionsthatobscurethetinyfluctuationsinRGBchannels
+Inthecontextofdeepfakedetection,thediversityandrealism
+requiredforrPPGsignalextraction.Furthermore,optimising
+of the VIPL-HR dataset make it an invaluable tool for
+detection frameworks such as Neural-ODEs for resource-
+testingalgorithmsthatrelyonphysiologicalinconsistencies
+constrained devices is an unresolved issue, restricting the
+toidentifymanipulatedcontent.
+models’ utility in real-world low-power systems. Motion-
+compensationalgorithms,whilepromising,frequentlyintro-
+2) MAHNOB-HCIDATASET ducelatency,limitingtheirusefulnessinreal-timesystems.
+The MAHNOB-HCI dataset [119], originally developed Oneofthemitigationsisadaptiveilluminationcorrection
+for emotion recognition and human-computer interaction algorithmsthatdynamicallyadjusttochangingillumination
+studies, has also become an essential resource for rPPG conditionsthroughhistogramequalisationordeep-learning-
+research. This dataset includes 527 video recordings from based enhancement networks. Another is multi-spectral or
+VOLUME13,2025 183571
+=== PAGE 16 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+near-infrared imaging to capture physiological signals in C. DATAANDAPPLICATIONCHALLENGES
+low-lightenvironmentsmorestably.Forcomputationalcon- The diversity and quality of training datasets have a
+straints, light-weight CNN architectures like MobileNetV3 significant impact on the effectiveness of deepfake detec-
+or EfficientNet-lite may be employed for rPPG extraction, tion systems. However, present datasets lack demographic,
+supplementedbyhardwareacceleration(e.g.,FPGAoredge environmental, and lighting diversity, resulting in biased
+TPUdeployment)forreal-timeprocessing.Formotionarti- modelsthatperformpoorlyinreal-worldcircumstances.For
+facts,hybridmethodsintegratingopticalflowwith3Dfacial instance, models trained on well-lit, frontal-facing movies
+meshtrackingmayenablemorerobustmotioncompensation may fail when applied to videos with difficult angles,
+with lower latency. Another strategy could be temporal occlusions,orchanginglightingconditions.
+consistency regularization in training, where models are Real-time detection presents an additional problem since
+penalizedforgeneratingphysiologicallyunfeasiblevariation the high computing demands of processing video frames
+across consecutive frames to enhance robustness against and extracting rPPG signals clash with the low-latency
+transientdistortions. requirementsofpracticalapplications.Lightweightsystems,
+while addressing delay, can cost accuracy, particularly in
+B. GENERALISATIONANDROBUSTNESSISSUES complicated contexts. Furthermore, the interpretability of
+Due to their dependence on domain-specific training data, deep learning models utilised for detection are limited.
+deepfakedetectionsystemsthatarebasedonrPPGsdemon- Techniques such as SHAP or Grad-CAM, while beneficial
+strate restricted generalisation across a variety of datasets forpost-hocanalysis,donotprovidereal-timeexplainability,
+and manipulation techniques. Models trained on datasets whichiscrucialforhigh-stakesapplications.
+such as Celeb-DF v2 and DFDC Viewing the struggle Finally,advancesingenerativemodelssuchasStyleGAN3
+to adapt to novel settings, emphasising the domain shift and diffusion models have resulted in the development of
+issue. This problem is further complicated by adversarial moresophisticateddeepfakesthatemitrealisticrPPGsignals,
+vulnerabilities, in which modest perturbations introduced making detection more difficult. The progress of such tech-
+using techniques such as the Fast Gradient Sign Method nologiesdemandsongoingupgradestodetectionmodelsand
+(FGSM) or Projected Gradient Descent (PGD) drasti- techniques,whichfrequentlyfallbehindtherateofgenerative
+cally disturb physiological signals while preserving visual model development. A particularly critical challenge arises
+quality. fromthefactthatstate-of-the-artGANsanddiffusionmodels
+Handling low-quality, compressed, or noisy video data are increasingly capable of simulating realistic PPG and
+is another key challenge. The deterioration in spatial evenrPPG-likesignals.ThisdirectlyquestionwhetherrPPG
+and temporal resolution reduces the accuracy of retrieved provides a unique advantage for detection, since synthetic
+rPPG signals, particularly in the green channel, which rPPG traces can be embedded into manipulated videos
+is most closely connected to blood volume variations. to mimic genuine physiological fluctuations. If generative
+Motion-induced aberrations cause phase errors in signal models can replicate these temporal dynamics, rPPG-based
+processing, which leads to inaccurate heart rate measure- detection systems risk being bypassed unless they exploit
+ment. Techniques such as optical flow or facial landmark featuresbeyondrawsignalperiodicity.
+tracking offer partial solutions, but they frequently fail
+under complex motion scenarios or occlusions, rendering
+VIII. FUTUREDIRECTIONS
+them insufficient for robust identification in uncontrolled
+Asdeepfaketechnologycontinuestoevolve,thereareseveral
+environments.
+promising directions for future research in the field of
+To support generalization, domain adaptation techniques,
+deepfakedetectionusingrPPG:
+such as adversarial learning of domain-invariant features,
+can be used to support models learned on one data set
+to generalize to other data sets effectively. Moreover, A. ENHANCEMENTOFRPPGSIGNALEXTRACTION
+physics-based skin reflectance models of synthetic data The current accuracy stands at 95%, but there is room
+augmentation can generate diverse rPPG signal patterns for improvement in the future. Enhancing accuracy could
+across different demographics, lighting, and motion condi- involveexploringnewextractionmethods,suchasemploying
+tions.Tosupportadversarialrobustness,defensivedistillation advancedCNNsandleveragingstate-of-the-artCNNmodels.
+can be used in combination with adversarial training with Future work could also refine algorithms for more reliable
+perturbation constraints in the rPPG domain to reduce rPPG signal extraction, particularly under challenging con-
+susceptibility to small attacks while maintaining detection ditions like varying lighting, diverse skin tones, and motion
+accuracy. Moreover, cross-modal consistency tests—where artifacts. For instance, employing self-supervised learning
+physiological signals are cross-checked with lip move- techniquesmayenablemodelstolearnrobustsignalpatterns
+ments, speech rhythms, or eye-blink patterns—can serve fromvastamountsofunlabelledvideodata,sothattheycan
+as a defense against generative models that imitate rPPG handlenovelsituationsmoreeffectively.Adaptiveband-pass
+signals but fail to coordinate them with other human filtering tuned to particular heart rate bands may also
+activities. prove effective for reducing noise. Furthermore, combining
+183572 VOLUME13,2025
+=== PAGE 17 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+rPPGwithphotoplethysmography(PPG)sensorsinahybrid the creation of more diverse and representative datasets.
+detection system may provide robust signals for model Developing models that perform consistently well across
+training. variousdatasetsandreal-worldscenarioswillbeveryimpor-
+tant for the practical deployment of rPPG-based deepfake
+B. INTEGRATIONWITHOTHERDETECTIONMODALITIES detectiontechniques.Benchmarkingproblemsthatmaketask
+Integrating rPPG with other modalities, such as audio-
+models struggle to fit into unseen dataset conditions may
+visual synchronisation, facial micro-expressions, and voice
+fosterinnovationinthisfield.Addingfederatedcross-dataset
+biometrics,canenhancetherobustnessofdeepfakedetection.
+testing, where models are tested on decentralized datasets
+BysynchronisingrPPGsignalswithsubtlefacialmovements
+withoutcentralizingdata,canenhancerobustnessaswellas
+andmicro-expressions,thesystemcandetectinconsistencies
+privacy.
+that may go unnoticed when relying solely on rPPG.
+Similarly,analyzingvoicepatternsinconjunctionwithphys-
+iological signals can expose subtle discrepancies between E. REAL-TIMEDETECTIONANDSCALABILITY
+the visual and auditory cues, leading to a more nuanced Another key direction is the development of real-time
+andprecisedetectionframeworkthataddressestheinherent rPPG-based deepfake detection systems that can operate
+limitations of individual methods. Multimodal transformers efficiently on large-scale video platforms. Future research
+maybeinvestigatedtolearnjointlytemporalandcross-modal can optimise algorithms for speed and scalability, allowing
+interactionsamongvisual,physiological,andaudiocuesand forthedeploymentofrPPG-baseddetectionsystemsinreal-
+enhance detection accuracy under intricate manipulations. timeapplications,suchassocialmediamonitoringandvideo
+Graph-based multimodal fusion methods may also capture conferencingsecurity.EdgeAIimplementationscouldallow
+relationaldependenciesamongopposingcuestodetectricher privacy-preserving,on-devicedetection,reducingbandwidth
+inconsistencies. requirements while maintaining user confidentiality. Event-
+driveninferencestrategies—triggeringhigh-complexityanal-
+C. ADAPTATIONTOADVANCINGDEEPFAKETECHNIQUES ysisonlywhenanomaliesaredetected—couldfurtherreduce
+As deepfake generation methods rapidly advance, with latencyandcomputationalload.
+new models emerging every few weeks or months—such
+as GANs and VAEs—rPPG-based detection techniques
+must also evolve. To stay effective, future research can F. ETHICALANDPRIVACYCONSIDERATIONS
+As with any biometric-based technology, ethical and pri-
+focus on developing adaptive models that can keep pace
+vacy considerations must be considered. Future work can
+with these advancements. Leveraging adversarial training
+explore the ethical implications of using rPPG signals for
+or continual learning frameworks could enable rPPG-based
+deepfake detection, including the potential for misuse and
+detection systems to learn and adapt alongside the latest
+the protection of individuals’ biometric data. Developing
+deepfake creation techniques, ensuring they remain robust
+privacy-preserving rPPG-based detection methods will be
+and effective even as deepfake technology continues to
+essential for gaining public trust and ensuring responsible
+improve. Meta-learning can be used in a manner that
+useofthetechnology.Techniquessuchasfederatedlearning
+the system can learn rapidly to adapt to new generative
+and homomorphic encryption could be a possible solution
+artifacts with minimal retraining. Bayesian neural networks
+to train and deploy detection models without exposing
+canprovideadditionalflexibilitybyquantifyinguncertainty
+the raw biometric data. Differential privacy mechanisms
+when new manipulations are encountered. To maintain
+could also be applied to ensure that model updates do
+relevance against generative models that can simulate rPPG
+not leak sensitive information about any individual in the
+signals, future systems must move beyond single-signal
+dataset.
+analysis. One approach is cross-modal validation, where
+Since rPPG signals constitute sensitive biometric data,
+rPPG signals are checked against other cues such as lip-
+information, illegal use or misuse can lead to threats e.g.,
+synchronization, gaze dynamics, or audio prosody—areas
+identitytheft,tracking,orhealthprofiling.Toovercomethese
+where generative models may fail to maintain consistent
+issues,safeprocessingofrPPGdataisnecessaryforitsentire
+physiological coordination. Another direction is to exploit
+duration.Informedconsentmustbeobtainedatthecollection
+subtlehigher-ordersignalcharacteristics(e.g.,phaserelation-
+point, storage and trans- mission will employ encryption,
+ships,inter-beatvariability,andlong-termcoherence)thatare
+and strict access controls. Moreover, data minimization
+difficultforGANstoreproducefaithfully.Continuallearning
+and good defined retention policies can decrease long-term
+frameworkscanalsohelpadaptdetectorsasnewgenerative
+exposure.
+models emerge, ensuring that rPPG remains a meaningful
+Apart from technical security, ethical deployment entails
+cue even in the presence of increasingly sophisticated
+anin-depthexaminationofpotentialabusesituations,includ-
+fakes.
+ingthepossibilityofcompetitorstappingintorPPGdatafor
+D. GENERALISATIONANDCROSS-DATASETVALIDATION unauthorized applications. Having governance frameworks,
+Inordertoaddressthegeneralizationandrobustnessissues, guarantee regulatory compliance, and open communication
+future research can explore cross-dataset validation and willbecrucialtoproperuseandincreasingpublictrust.
+VOLUME13,2025 183573
+=== PAGE 18 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+By pursuing these future directions, the field of deepfake [9] I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley,
+detection using rPPG can continue to improve, providing S.Ozair, A. Courville, and Y. Bengio, ‘‘Generative adversarial net-
+works,’’Commun.ACM,vol.63,no.11,pp.139–144,2020.
+moreeffectiveandreliabletoolstocombatthegrowingthreat
+[10] D.P.KingmaandM.Welling,‘‘Anintroductiontovariationalautoen-
+ofdeepfaketechnology.
+coders,’’Found.TrendsMach.Learn.,vol.12,no.4,pp.307–392,2019.
+[11] G.Bendiab,H.Haiouni,I.Moulas,andS.Shiaeles,‘‘Deepfakesindigital
+mediaforensics:Generation,AI-baseddetectionandchallenges,’’J.Inf.
+IX. CONCLUSION
+Secur.Appl.,vol.88,Feb.2025,Art.no.103935.
+Thissurveyexploredthedynamicandchallengingaspectsof
+[12] S.Lee,S.Tariq,Y.Shin,andS.S.Woo,‘‘Detectinghandcraftedfacial
+deepfakedetection,withaparticularfocusontheuseofrPPG imagemanipulationsandGAN-generatedfacialimagesusingShallow-
+techniques.Asdeepfakegenerationmethodsbecomeincreas- FakeFaceNet,’’Appl.SoftComput.,vol.105,Jul.2021,Art.no.107256.
+[13] C.J.Xiong,K.O.M.Goh,andT.Connie,‘‘Deepfakesdetectionusing
+inglysophisticated,traditionaldetectionapproachesoftenfall
+computervisionanddeeplearningapproaches,’’J.Syst.Manage.Sci.,
+short of accurately identifying manipulated content. rPPG- vol.12,no.5,pp.21–35,2022.
+based detection offers a promising alternative by analysing [14] A.Hamza,A.R.R.Javed,F.Iqbal,N.Kryvinska,A.S.Almadhor,Z.Jalil,
+subtlephysiologicalsignals,suchasbloodflow-inducedskin andR.Borghol,‘‘DeepfakeaudiodetectionviaMFCCfeaturesusing
+machinelearning,’’IEEEAccess,vol.10,pp.134018–134028,2022.
+color variations, embedded within video data. However, the
+[15] A. Kaur, A. Noori Hoshyar, V. Saikrishna, S. Firmin, and F. Xia,
+application of rPPG in deepfake detection is not without its ‘‘Deepfakevideodetection:Challengesandopportunities,’’Artif.Intell.
+challenges. Two significant hurdles include the variability Rev.,vol.57,no.6,p.159,May2024.
+in skin color and the impact of lighting conditions on [16] X.Zhu,H.Fei,B.Zhang,T.Zhang,X.Zhang,S.Z.Li,andZ.Lei,
+‘‘Faceforgerydetectionby3Ddecompositionandcompositionsearch,’’
+the accuracy of rPPG signals. Skin color variations across
+IEEETrans.PatternAnal.Mach.Intell.,vol.45,no.7,pp.8342–8357,
+differentindividualscanaffectthestrengthanddetectability Jul.2023.
+of rPPG signals, leading to inconsistencies in detection [17] Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli,
+‘‘Image quality assessment: From error visibility to structural sim-
+performance. Additionally, fluctuating light conditions can
+ilarity,’’ IEEE Trans. Image Process., vol. 13, no. 4, pp.600–612,
+distort the captured rPPG signals, further complicating the Apr.2004.
+detectionprocess. [18] G. Gupta, K. Raja, M. Gupta, T. Jan, S. T. Whiteside, and M.
+Despite these challenges, rPPG-based methods repre- Prasad,‘‘AcomprehensivereviewofDeepFakedetectionusingadvanced
+machinelearningandfusionmethods,’’Electronics,vol.13,no.1,p.95,
+sent a crucial step forward in the fight against deep-
+Dec.2023.
+fakes. Notably, the DeepRhythm method has achieved a [19] M. M. Rashid, S.-H. Lee, and K.-R. Kwon, ‘‘Blockchain technology
+significant milestone, reaching up to 92% accuracy on for combating deepfake and protect video/image integrity,’’ J. Korea
+MultimediaSoc.,vol.24,no.8,pp.1044–1058,2021.
+top datasets, demonstrating the potential of rPPG-based
+[20] J. Kietzmann, L. W. Lee, I. P. McCarthy, and T. C. Kietzmann,
+techniques in real-world scenarios. Future research must ‘‘Deepfakes:Trickortreat?’’Bus.Horizons,vol.63,no.2,pp.135–146,
+focus on overcoming these obstacles by developing more Mar.2020.
+robust algorithms that account for diverse skin tones and [21] M.-Z.Poh,D.J.McDuff,andR.W.Picard,‘‘Non-contact,automated
+cardiac pulse measurements using video imaging and blind source
+adapt to varying lighting conditions. Hybrid approaches
+separation,’’Opt.Exp.,vol.18,no.10,pp.10762–10774,2010.
+that combine rPPG with other detection techniques could [22] H. Xiao, T. Liu, Y. Sun, Y. Li, S. Zhao, and A. Avolio, ‘‘Remote
+also enhance the reliability and accuracy of deepfake photoplethysmographyforheartratemeasurement:Areview,’’Biomed.
+SignalProcess.Control,vol.88,Feb.2024,Art.no.105608.
+detection.
+[23] P.Pirzada,A.Wilde,andD.Harris-Birtill,‘‘Remotephotoplethysmogra-
+phyforheartrateandbloodoxygenationmeasurement:Areview,’’IEEE
+REFERENCES SensorsJ.,vol.24,no.15,pp.23436–23453,Aug.2024.
+[24] J.Hernandez-Ortega,J.Fierrez,A.Morales,andP.Tome,‘‘Timeanalysis
+[1] Y.LeCun,Y.Bengio,andG.Hinton,‘‘Deeplearning,’’Nature,vol.521, ofpulse-basedfaceanti-spoofinginvisibleandNIR,’’inProc.IEEE/CVF
+no.7553,pp.436–444,2015. Conf.Comput.Vis.PatternRecognit.Workshops(CVPRW),Jun.2018,
+[2] B.ChesneyandD.Citron,‘‘Deepfakes:Aloomingchallengeforprivacy, pp.657–6578.
+democracy,andnationalsecurity,’’Calif.LawRev.,vol.107,p.1753, [25] J. Tian, L. Guan, Y. Liu, L. Zhang, and Y. Chen, ‘‘Deepphysio:
+Mar.2019. Detecting deepFake with non-personalized feature of physiological
+[3] E.WhittakerandR.M.Kowalski,‘‘Cyberbullyingviasocialmedia,’’J. signal,’’MultimediaSyst.,vol.31,no.2,p.86,Apr.2025.
+schoolviolence,vol.14,no.1,pp.11–29,2014. [26] H.F.Shahzad,F.Rustam,E.S.Flores,J.L.V.Mazón,I.delaTorreDiez,
+[4] S.Kappeler,ThePornographyofRepresentation.Hoboken,NJ,USA: andI.Ashraf,‘‘Areviewofimageprocessingtechniquesfordeepfakes,’’
+Wiley,2013. Sensors,vol.22,no.12,p.4556,Jun.2022.
+[5] D. A. Gusev, ‘‘Improved identification of portraiture of the julio- [27] S. R. Ahmed, E. Sonuc, M. R. Ahmed, and A. D. Duru, ‘‘Analysis
+claudianperiodwithmobileapps,’’J.Imag.Sci.Technol.,vol.65,no.6, surveyondeepfakedetectionandrecognitionwithconvolutionalneural
+pp.060403-1–060403-36,Nov.2021. networks,’’inProc.Int.Congr.Hum.-Comput.Interact.,Optim.Robotic
+[6] E. Nieto McAvoy and J. Kidd, ‘‘Synthetic heritage: Online Appl.(HORA),Jun.2022,pp.1–7.
+platforms, deceptive genealogy and the ethics of algorithmically [28] M.Javed,Z.Zhang,F.H.Dahri,andA.A.Laghari,‘‘Real-timedeepfake
+generated memory,’’ Memory, Mind Media, vol. 3, p. e12, videodetectionusingeyemovementanalysiswithahybriddeeplearning
+Feb.2024. approach,’’Electronics,vol.13,no.15,p.2947,Jul.2024.
+[7] K.Liu,I.Perov,D.Gao,N.Chervoniy,W.Zhou,andW.Zhang,‘‘Deep- [29] M. Taeb and H. Chi, ‘‘Comparison of deepfake detection techniques
+facelab:Integrated,flexibleandextensibleface-swappingframework,’’ through deep learning,’’ J. Cybersecurity Privacy, vol. 2, no. 1,
+PatternRecognit.,vol.141,Sep.2023,Art.no.109628. pp.89–106,Mar.2022.
+[8] L. Wang, X. Meng, D. Li, X. Zhang, S. Ji, and S. Guo, ‘‘DEEP- [30] A. Rössler, D. Cozzolino, L. Verdoliva, C. Riess, J. Thies, and
+FAKER:Aunifiedevaluationplatformforfacialdeepfakeanddetection M.Niessner,‘‘FaceForensics++:Learningtodetectmanipulatedfacial
+models,’’ ACM Trans. Privacy Secur., vol. 27, no. 1, pp.1–34, images,’’inProc.IEEE/CVFInt.Conf.Comput.Vis.(ICCV),Oct.2019,
+Feb.2024. pp.1–11.
+183574 VOLUME13,2025
+=== PAGE 19 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+[31] D. Salvi, H. Liu, S. Mandelli, P. Bestagini, W. Zhou, W. Zhang, and [54] T.-C.Wang,M.-Y.Liu,J.-Y.Zhu,A.Tao,J.Kautz,andB.Catanzaro,
+S.Tubaro, ‘‘A robust approach to multimodal deepfake detection,’’ J. ‘‘High-resolution image synthesis and semantic manipulation with
+Imag.,vol.9,no.6,p.122,Jun.2023. conditional GANs,’’ in Proc. IEEE/CVF Conf. Comput. Vis. Pattern
+[32] C. Zhao, C. Wang, G. Hu, H. Chen, C. Liu, and J. Tang, ‘‘ISTVT: Recognit.,Jun.2018,pp.8798–8807.
+Interpretablespatial–temporalvideotransformerfordeepfakedetection,’’ [55] T.Karras,S.Laine,andT.Aila,‘‘Astyle-basedgeneratorarchitecturefor
+IEEETrans.Inf.ForensicsSecurity,vol.18,pp.1335–1348,2023. generativeadversarialnetworks,’’inProc.IEEE/CVFConf.Comput.Vis.
+[33] A.Ok,‘‘Deepfakedetectionusingconvolutionalvisiontransformersand PatternRecognit.(CVPR),Jun.2019,pp.4401–4410.
+convolutionalneuralnetworks,’’Int.J.forRes.Appl.Sci.Eng.Technol., [56] H. Zhang, F. Yao, Y. Gong, and Q. Zhang, ‘‘Anemone image
+vol.13,no.3,pp.770–776,Mar.2025. generation based on diffusion-Stylegan2,’’ IEEE Access, vol. 12,
+[34] M. H. Malik, H. Ghous, S. Qadri, S. A. Nawaz, and A. Anwar, pp.37310–37325,2024.
+‘‘Frequency-baseddeep-fakevideodetectionusingdeeplearningmeth- [57] J.Bao,D.Chen,F.Wen,H.Li,andG.Hua,‘‘CVAE-GAN:Fine-grained
+ods,’’J.Comput.Biomed.Informat.,vol.4,no.2,pp.41–48,2023. imagegenerationthroughasymmetrictraining,’’inProc.IEEEInt.Conf.
+Comput.Vis.(ICCV),Oct.2017,pp.2764–2773.
+[35] G.Zhang,M.Gao,Q.Li,W.Zhai,andG.Jeon,‘‘Multi-modalgenerative
+[58] J.Chung,C.Gulcehre,K.Cho,andY.Bengio,‘‘Empiricalevaluation
+DeepFakedetectionviavisual-languagepretrainingwithgatefusionfor
+of gated recurrent neural networks on sequence modeling,’’ 2014,
+cognitivecomputation,’’Cognit.Comput.,vol.16,no.6,pp.2953–2966,
+arXiv:1412.3555.
+Nov.2024.
+[59] H.Pearce,X.Yang,P.S.Roop,M.Katzef,andT.B.Strøm,‘‘Designing
+[36] A.V.NadimpalliandA.Rattani,‘‘ProActiveDeepFakedetectionusing
+neural networks for real-time systems,’’ IEEE Embedded Syst. Lett.,
+GAN-basedvisiblewatermarking,’’ACMTrans.MultimediaComput.,
+vol.13,no.3,pp.94–97,Sep.2021.
+Commun.,Appl.,vol.20,no.11,pp.1–27,Nov.2024.
+[60] A. Paszke et al., ‘‘PyTorch: An imperative style, high-performance
+[37] U.A.Ciftci,I.Demir,andL.Yin,‘‘FakeCatcher:Detectionofsynthetic
+deep learning library,’’ inProc. Adv.Neural Inf.Process. Syst.,2019,
+portrait videos using biological signals,’’ IEEE Trans. Pattern Anal.
+pp.1–18.
+Mach.Intell.,vol.42,no.11,pp.2781–2796,Nov.2020.
+[61] F. Chollet, ‘‘Keras: The Python deep learning library,’’ Astrophysics
+[38] J. Hernandez-Ortega, R. Tolosana, J. Fierrez, and A. Morales,
+Source Code Library (ASCL), Houghton, MI, USA, Tech. Rep.
+‘‘DeepFakesON-phys:DeepFakesdetectionbasedonheartrateestima-
+ascl:1806.022,2018.
+tion,’’2020,arXiv:2010.00400. [62] X.Chen,B.Ni,Y.Liu,N.Liu,Z.Zeng,andH.Wang,‘‘SimSwap++:
+[39] G. Boccignone, S. Bursic, V. Cuculo, A. D’Amelio, G. Grossi, Towardsfasterandhigh-qualityidentityswapping,’’IEEETrans.Pattern
+R.Lanzarotti,andS.Patania,‘‘DeepFakeshavenoheart:AsimplerPPG- Anal.Mach.Intell.,vol.46,no.1,pp.576–592,Jan.2024.
+based method toreveal fake videos,’’ inProc. Int. Conf.Image Anal. [63] M.Nawaz,A.Javed,andA.Irtaza,‘‘AdeeplearningmodelforFaceSwap
+Process.,2022,pp.186–195. andface-reenactmentdeepfakesdetection,’’Appl.SoftComput.,vol.162,
+[40] H.Qi,Q.Guo,F.Juefei-Xu,X.Xie,L.Ma,W.Feng,Y.Liu,andJ.Zhao, Sep.2024,Art.no.111854.
+‘‘DeepRhythm: Exposing DeepFakes with attentional visual heartbeat [64] B.-F.Wu,L.-W.Chiu,Y.-C.Wu,C.-C.Lai,andP.-H.Chu,‘‘Contactless
+rhythms,’’inProc.28thACMInt.Conf.Multimedia,NewYork,NY,USA, blood pressure measurement via remote photoplethysmography with
+Oct.2020,pp.4318–4327. syntheticdatagenerationusinggenerativeadversarialnetwork,’’inProc.
+[41] Y.Li,X.Yang,P.Sun,H.Qi,andS.Lyu,‘‘Celeb-DF:Alarge-scale IEEE/CVFConf.Comput.Vis.PatternRecognit.Workshops(CVPRW),
+challengingdatasetforDeepFakeforensics,’’inProc.IEEE/CVFConf. Jun.2022,pp.2129–2137.
+Comput.Vis.PatternRecognit.(CVPR),Jun.2020,pp.3207–3216. [65] Z.Yu,R.Cai,Z.Li,W.Yang,J.Shi,andA.C.Kot,‘‘Benchmarkingjoint
+[42] B. Dolhansky, J. Bitton, B. Pflaum, J. Lu, R. Howes, M. Wang, and facespoofingandforgerydetectionwithvisualandphysiologicalcues,’’
+C.C.Ferrer, ‘‘The DeepFake detection challenge (DFDC) dataset,’’ IEEETrans.DependableSecureComput.,vol.21,no.5,pp.4327–4342,
+2020,arXiv:2006.07397. Sep.2024.
+[43] X. Niu, H. Han, S. Shan, and X. Chen, ‘‘VIPL-HR: A multi-modal [66] R. Babaei, S. Cheng, R. Duan, and S. Zhao, ‘‘Generative artificial
+database for pulse estimation from less-constrained face video,’’ in intelligence and the evolving challenge of deepfake detection: A
+Proc.14thAsianConf.Comput.Vis.Cham,Switzerland:Springer,2018, systematic analysis,’’ J. Sensor Actuator Netw., vol. 14, no. 1, p.17,
+pp.562–576. Feb.2025.
+[44] P. Korshunov and S. Marcel, ‘‘DeepFakes: A new threat to face [67] D. Lakshmi and D. J. Hemanth, ‘‘An overview of deepfake methods
+recognition?Assessmentanddetection,’’2018,arXiv:1812.08685. inmedicalimageprocessingforhealthcareapplications,’’inFrontiers
+[45] Y. Mirsky and W. Lee, ‘‘The creation and detection of Deepfakes: A in Artificial Intelligence and Applications, vol. 383. Amsterdam, The
+survey,’’ACMComput.Surveys(CSUR),vol.54,no.1,pp.1–41,2021. Netherlands:IOSPress,2024,pp.304–311.
+[68] S. Agarwal, H. Farid, O. Fried, and M. Agrawala, ‘‘Detecting deep-
+[46] R.Tolosana,R.Vera-Rodriguez,J.Fierrez,A.Morales,andJ.Ortega-
+fake videos from phoneme-viseme mismatches,’’ in Proc. IEEE/CVF
+Garcia,‘‘Deepfakesandbeyond:Asurveyoffacemanipulationandfake
+detection,’’Inf.Fusion,vol.64,pp.131–148,Dec.2020.
+Conf.Comput.Vis.PatternRecognit.Workshops(CVPRW),Jun.2020,
+pp.660–661.
+[47] M. Turk and A. Pentland, ‘‘Eigenfaces for recognition,’’ J. Cognit.
+[69] F.Matern,C.Riess,andM.Stamminger,‘‘Exploitingvisualartifactsto
+Neurosci.,vol.3,no.1,pp.71–86,Jan.1991.
+exposedeepfakesandfacemanipulations,’’inProc.IEEEWinterAppl.
+[48] J.Langguth,K.Pogorelov,S.Brenner,P.Filkuková,andD.T.Schroeder,
+Comput.Vis.Workshops(WACVW),Jan.2019,pp.83–92.
+‘‘Don’ttrustyoureyes:ImagemanipulationintheageofDeepFakes,’’
+[70] M. Dang and T. N. Nguyen, ‘‘Digital face manipulation creation and
+FrontiersCommun.,vol.6,May2021,Art.no.632317.
+detection:Asystematicreview,’’Electronics,vol.12,no.16,p.3407,
+[49] Z. Lai, J. Li, C. Wang, J. Wu, and D. Jiang, ‘‘LIDeepDet: Deepfake
+Aug.2023.
+detectionviaimagedecompositionandadvancedlightinginformation
+[71] L.Y.GongandX.J.Li,‘‘Acontemporarysurveyondeepfakedetection:
+analysis,’’Electronics,vol.13,no.22,p.4466,Nov.2024.
+Datasets,algorithms,andchallenges,’’Electronics,vol.13,no.3,p.585,
+[50] Z. Ahmad, Z. U. A. Jaffri, M. Chen, and S. Bao, ‘‘Understanding Jan.2024.
+GANs: Fundamentals, variants, training challenges, applications, and [72] M.Elpeltagy,A.Ismail,M.S.Zaki,andK.Eldahshan,‘‘Anovelsmart
+open problems,’’ Multimedia Tools Appl., vol. 84, no. 12, pp.1–77, deepfakevideodetectionsystem,’’Int.J.Adv.Comput.Sci.Appl.,vol.14,
+May2024. no.1,pp.1–15,2023.
+[51] P. Sharma, M. Kumar, and H. K. Sharma, ‘‘GAN-CNN ensemble: A [73] A. Heidari, N. Jafari Navimipour, H. Dag, and M. Unal, ‘‘Deepfake
+robustdeepfakedetectionmodelofsocialmediaimagesusingminimized detectionusingdeeplearningmethods:Asystematicandcomprehensive
+catastrophicforgettingandgenerativereplaytechnique,’’Proc.Comput. review,’’WIREsDataMiningKnowl.Discovery,vol.14,no.2,p.e1520,
+Sci.,vol.235,pp.948–960,Jan.2024. Mar.2024.
+[52] J. Jenkins and K. Roy, ‘‘Exploring deep convolutional generative [74] S.Agarwal,H.Farid,Y.Gu,M.He,K.Nagano,andH.Li,‘‘Protecting
+adversarialnetworks(DCGAN)inbiometricsystems:Asurveystudy,’’ worldleadersagainstdeepfakes,’’inProc.CVPRworkshops,Jun.2019,
+DiscoverArtif.Intell.,vol.4,no.1,p.42,May2024. pp.38–45.
+[53] M. Tetteh, L. Li, and A. Davis, ‘‘Leveraging deep learning with [75] K. Chugh, P. Gupta, A. Dhall, and R. Subramanian, ‘‘Not made
+progressive growing GAN and ensemble smoother with multiple data for each other-audio-visual dissonance-based deepfake detection and
+assimilation for inverse modeling,’’ Adv. Water Resour., vol. 187, localization,’’ in Proc. 28th ACM Int. Conf. Multimedia, Oct. 2020,
+May2024,Art.no.104680. pp.439–447.
+VOLUME13,2025 183575
+=== PAGE 20 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+[76] S.-Y.Wang,O.Wang,R.Zhang,A.Owens,andA.A.Efros,‘‘CNN- [98] T.Guo,Q.Lin,andJ.Allebach,‘‘Remoteestimationofrespirationrate
+generated images are surprisingly easy to Spot... for now,’’ in Proc. byopticalflowusingconvolutionalneuralnetworks,’’Electron.Imag.,
+IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR), Jun. 2020, vol.33,no.8,pp.267-1–267-11,Jan.2021.
+pp.8695–8704. [99] X.Niu,S.Shan,H.Han,andX.Chen,‘‘RhythmNet:End-to-endheartrate
+[77] B. Chen, T. Li, and W. Ding, ‘‘Detecting deepfake videos based on estimationfromfaceviaspatial–temporalrepresentation,’’IEEETrans.
+spatiotemporalattentionandconvolutionalLSTM,’’Inf.Sci.,vol.601, ImageProcess.,vol.29,pp.2409–2423,2020.
+pp.58–70,Jul.2022. [100] R.ChakrabortyandR.Naskar,‘‘Roleofhumanphysiologyandfacial
+[78] A.Broinowski,‘‘Thefutureishackable:Apocalypseandeuphoriaina biomechanics towards building robust deepfake detectors: A compre-
+deepfakeworld,’’GriffithRev.,vol.2023,no.79,pp.9–19,2023. hensive survey and analysis,’’ Comput. Sci. Rev., vol. 54, Nov. 2024,
+[79] J.W.SeveringhausandP.B.Astrup,‘‘Historyandrecentdevelopments Art.no.100677.
+inpulseoximetry,’’Anesthesiology,vol.65,no.4,p.423,1986. [101] J.P.Cardenuto,J.Yang,R.Padilha,R.Wan,D.Moreira,H.Li,S.Wang,
+[80] D.E.StrandnessandD.S.Sumner,‘‘TheDopplerultrasonicflowmeter,’’ F. Andaló, S. Marcel, and A. Rocha, ‘‘The age of synthetic realities:
+Arch.Surgery,vol.94,no.6,pp.862–868,1967. Challenges and opportunities,’’ APSIPA Trans. Signal Inf. Process.,
+[81] A.L.Goldberger,ClinicalElectrocardiography:ASimplifiedApproach, vol.12,no.1,pp.1–16,2023.
+7thed.,Philadelphia,PA,USA:Elsevier,Jul.2006,p.352. [102] E. M. Nowara, D. McDuff, and A. Veeraraghavan, ‘‘A meta-
+[82] R. Karthick, M. S. Dawood, and P. Meenalochini, ‘‘Analysis of analysis of the impact of skin type and gender on non-contact
+vital signs using remote photoplethysmography (RPPG),’’ J. Ambi- photoplethysmography measurements,’’ in Proc. IEEE/CVF Conf.
+ent Intell. Humanized Comput., vol. 14, no. 12, pp.16729–16736, Comput. Vis. Pattern Recognit. Workshops (CVPRW), Jun. 2020,
+Dec.2023. pp.1148–1155.
+[83] K. S. Kammari, N. Srivastava, and I. E. Sarris, ‘‘Prediction of heart [103] A.Dasari,S.K.A.Prakash,L.A.Jeni,andC.S.Tucker,‘‘Evaluation
+wellnessbasedontheanalysisofskincolor,’’Eng.Proc.,vol.50,no.1, ofbiasesinremotephotoplethysmographymethods,’’npjDigit.Med.,
+pp.1–5,2023. vol.4,no.1,p.91,Jun.2021.
+[84] Q. Zhu, C.-W. Wong, Z. M. Lazri, M. Chen, C.-H. Fu, and M. Wu, [104] M.S.H.Mukta,J.Ahmad,M.A.K.Raiaan,S.Islam,S.Azam,M.E.Ali,
+‘‘A comparative study of principled rPPG-based pulse rate tracking and M. Jonkman, ‘‘An investigation of the effectiveness of deepfake
+algorithms for fitness activities,’’ IEEE Trans. Biomed. Eng., vol. 72, modelsandtools,’’J.SensorActuatorNetw.,vol.12,no.4,Aug.2023,
+no.1,pp.152–165,Jan.2025. Art.no.104673.
+[85] E. Allado, M. Poussel, J. Renno, A. Moussu, O. Hily, M. Tem- [105] F.Alanazi,‘‘Comparativeanalysisofinternalandexternalfacialfeatures
+perelli, E. Albuisson, and B. Chenuel, ‘‘Remote photoplethysmog- forenhanceddeepfakedetection,’’inProc.16thInt.Conf.AgentsArtif.
+raphy is an accurate method to remotely measure respiratory rate: Intell.,2024,pp.308–314.
+A hospital-based trial,’’ J. Clin. Med., vol. 11, no. 13, p.3647, [106] R.Tolosana,S.Romero-Tapiador,R.Vera-Rodriguez,E.Gonzalez-Sosa,
+Jun.2022. and J. Fierrez, ‘‘DeepFakes detection across generations: Analysis of
+[86] H. M. Morales-Fajardo, J. Rodríguez-Arce, A. Gutiérrez-Cedeño, facial regions, fusion, and performance evaluation,’’ Eng. Appl. Artif.
+J.C.Viñas, J. J. Reyes-Lagos, E. A. Abarca-Castro, C. I. Ledesma- Intell.,vol.110,Apr.2022,Art.no.104673.
+Ramírez, and A. H. Vilchis-González, ‘‘Towards a non-contact [107] A. Luukkonen, ‘‘Exploring remote photoplethysmography signals for
+method for identifying stress using remote photoplethysmography deepfakedetectioninfacialvideos,’’Master’sthesis,Univ.Oulu,Oulu,
+in academic environments,’’ Sensors, vol. 22, no. 10, p.3780, Finland,2023.
+May2022. [108] L. Birla, T. Saikia, and P. Gupta, ‘‘AVENUE: A novel deepfake
+[87] R. S. Vulcan, S. André, and M. Bruyneel, ‘‘Photoplethysmography detection method based on temporal convolutional network and rPPG
+in normal and pathological sleep,’’ Sensors, vol. 21, no. 9, p.2928, information,’’ACMTrans.Intell.Syst.Technol.,vol.16,no.1,pp.1–16,
+Apr.2021. Feb.2025.
+[88] P. V. Rouast, M. T. P. Adam, R. Chiong, D. Cornforth, and E. Lux, [109] S.Chen,K.L.Wong,T.T.Chan,Y.Wang,R.H.Y.So,andJ.W.Chin,
+‘‘Remote heart rate measurement using low-cost RGB face video: A ‘‘AnimageenhancementbasedmethodforimprovingrPPGextraction
+technical literature review,’’ Frontiers Comput. Sci., vol. 12, no. 5, underlow-lightillumination,’’Biomed.SignalProcess.Control,vol.100,
+pp.858–872,Oct.2018. Feb.2025,Art.no.106963.
+[89] Y.DengandA.Kumar,‘‘Standoffheartrateestimationfromvideo:A [110] P. Pirzada, A. Wilde, G. Doherty, and D. Harris-Birtill, ‘‘Remote
+review,’’Proc.SPIE,vol.11399,pp.16–29,Apr.2020. photoplethysmography (rPPG): A state-of-the-art review,’’ medRxiv,
+[90] G.DeHaanandV.Jeanne,‘‘Robustpulseratefromchrominance-based vol.2023,pp.1–20,Oct.2023.
+rPPG,’’ IEEE Trans. Biomed. Eng., vol. 60, no. 10, pp.2878–2886, [111] Z. Yue, S. Ding, S. Yang, H. Yang, Z. Li, Y. Zhang, and Y. Li,
+Oct.2013. ‘‘Deep super-resolution network for rPPG information recovery and
+[91] R.C.Ontiveros,M.Elgendi,G.Missale,andC.Menon,‘‘Evaluating noncontactheartrateestimation,’’IEEETrans.Instrum.Meas.,vol.70,
+RGBchannelsinremotephotoplethysmography:Acomparativestudy pp.1–11,2021.
+with contact-based PPG,’’ Frontiers Physiol., vol. 14, Dec. 2023, [112] Q. Xu, H. Qiao, S. Liu, and S. Liu, ‘‘Deepfake detection based on
+Art.no.1296277. remotephotoplethysmography,’’MultimediaToolsAppl.,vol.82,no.23,
+[92] B. Lokendra and G. Puneet, ‘‘AND-rPPG: A novel denoising-rPPG pp.35439–35456,Sep.2023.
+networkforimprovingremoteheartrateestimation,’’Comput.Biol.Med., [113] J.Hernandez-Ortega,R.Tolosana,J.Fierrez,andA.Morales,‘‘Deep-
+vol.141,Feb.2022,Art.no.105146. Fakesdetectionbasedonheartrateestimation:Single-andmulti-frame,’’
+[93] W. Verkruysse, L. O. Svaasand, and J. S. Nelson, ‘‘Remote plethys- in Handbook of Digital Face Manipulation and Detection: From
+mographic imaging using ambient light,’’ Opt. Exp., vol. 16, no. 26, DeepFakes To Morphing Attacks. Cham, Switzerland: Springer, 2022,
+pp.21434–21445,2008. pp.255–273.
+[94] A.HyvärinenandE.Oja,‘‘Independentcomponentanalysis:Algorithms [114] W. Chen and D. McDuff, ‘‘DeepPhys: Video-based physiological
+and applications,’’ Neural Netw., vol. 13, nos. 4–5, pp.411–430, measurementusingconvolutionalattentionnetworks,’’inProc.Eur.Conf.
+Jun.2000. Comput.Vis.(ECCV),2018,pp.356–373.
+[95] F.KherifandA.Latypova,‘‘Principalcomponentanalysis,’’inMachine [115] M.Chen,X.Liao,andM.Wu,‘‘PulseEdit:Editingphysiologicalsignals
+Learning.Amsterdam,TheNetherlands:Elsevier,2020,pp.209–225. in facial videos for privacy protection,’’ IEEE Trans. Inf. Forensics
+[96] A.H.M.ZadidulKarim,Md.S.Miah,G.R.AhmedJamal,R.A.Fahima, Security,vol.17,pp.457–471,2022.
+and M. T. Rahman, ‘‘Application of chrominance based rPPG in [116] J. Wu, Y. Zhu, X. Jiang, Y. Liu, and J. Lin, ‘‘Local attention and
+estimation of heart rate from video signal,’’ in Proc. 24th Int. Conf. long-distanceinteractionofrPPGfordeepfakedetection,’’Vis.Comput.,
+Comput.Inf.Technol.(ICCIT),Dec.2021,pp.1–6. vol.40,no.2,pp.1083–1094,Feb.2024.
+[97] M.-Z. Poh, D. J. McDuff, and R. W. Picard, ‘‘Advancements [117] Y. Sun, Z. Zhang, C. Qiu, L. Wang, L. Sun, and Z. Wang, ‘‘Fake-
+in noncontact, multiparameter physiological measurements using a Transformer:Exposingfaceforgeryfromspatial–temporalrepresentation
+webcam,’’ IEEE Trans. Biomed. Eng., vol. 58, no. 1, pp.7–11, modeledbyfacialpixelvariations,’’inProc.7thInt.Conf.Intell.Comput.
+Jan.2011. SignalProcess.(ICSP),Apr.2022,pp.705–713.
+183576 VOLUME13,2025
+=== PAGE 21 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+[118] M. Hu, F. Qian, D. Guo, X. Wang, L. He, and F. Ren, ‘‘ETA- KEERTHI DEVARAJAN ANURADHA is cur-
+rPPGNet:Effectivetime-domainattentionnetworkforremoteheartrate rently pursuing the B.Tech. degree in computer
+measurement,’’IEEETrans.Instrum.Meas.,vol.70,pp.1–12,2021. science and engineering with Amrita Vishwa
+[119] E.Lee,E.Chen,andC.Lee,‘‘Meta-rPPG:Remoteheartrateestimation Vidyapeetham,Bengaluru.Herresearchinterests
+using a transductive meta-learner,’’ in Proc. Eur. Conf. Comput. Vis. include artificial intelligence, machine learning,
+Cham,Switzerland:Springer,2020,pp.392–409. and computational modeling. She has published
+research on biomedical applications of hybrid
+nanofluids, particularly mathematical modeling
+of arterial blood flow with implications for car-
+diovascular treatments. She is keen on applying
+computationalapproachestosolvereal-worldchallengesthroughinnovative
+research.
+KAVYA SREE KAMMARI (Member, IEEE) is
+currentlypursuingtheB.Tech.degreeincomputer
+science (AI) with the Amrita School of Com-
+puting,AmritaVishwaVidyapeetham,Bengaluru,
+India. She has a keen interest in AI, machine
+learning,andgenerativeAI.Sheisalsoaninternat
+DentsuInc.Shehasworkedonvariousprojectsin
+biomedicalinnovations,archaeology,andcyberse-
+POOSARLANAGASURYAPADMANAMRATA
+curity,publishingseveralresearcharticlesonthese
+is currently pursuing the B.Tech. degree in
+topics.HerworkfocusesonapplyingAItoreal-
+electronicsandcommunicationengineeringfrom
+world challenges. She serves as the Chair for the IEEE Computational
+Amrita Vishwa Vidyapeetham, Bengaluru. She
+IntelligenceSociety(CIS)ChapteratBengalurubranchofherinstitution.
+completed a summer internship as an Embed-
+ded Systems Intern with Tata Consultancy Ser-
+vices. Her research interests include embed-
+ded systems, the Internet of Things (IoT), and
+field-programmablegatearrays(FPGAs).
+MANJU KHANNA (Senior Member, IEEE)
+received the Bachelor of Engineering degree in
+instrumentation and electronics from Bangalore
+University,in1998,theMasterofSciencedegree
+in software systems from BITS Pilani, in 2003,
+andthePh.D.degreeincomputerandinformation
+science from VTU, in 2020, with a thesis on
+Multiagent Systems in Distributed Data Min- K. V. NAGARAJA received the B.Sc., M.Sc.,
+ing. She currently guides the Ph.D. scholars in M.Phil.,andPh.D.degreesfromBangaloreUni-
+high-performance computing, cybersecurity, and versity,Bengaluru,India,in1994,1996,1998,and
+agriculture, and is a mentor to the IEEE-CIS Student Chapter at Amrita 2005,respectively.HeiscurrentlyaProfessorwith
+VishwaVidyapeetham,Bengaluru.SheisanAssociateProfessorwiththe the Department of Mathematics, Computational
+Amrita School of Computing, Amrita Vishwa Vidyapeetham, with over ScienceLaboratory,AmritaSchoolofEngineer-
+20 years of experience, including more than four years in industry. Prior ing, Amrita Vishwa Vidyapeetham, Bengaluru.
+toAmrita,shewasanAssociateProfessoratMVJCollegeofEngineering, He has authored or co-authored over 100 tech-
+teachingAI,networks,andembeddedsystems.Shehaspublishedpapers nical papers published in international journals
+in Scopus and Web of Science and worked on industry projects in web or conferences. His research interests include
+developmentandJava.Herresearchinterestsincluderenewableenergyand finite element analysis, computational electromagnetics, and aerospace
+multiagentsystems. applications.Heservesasamemberoftheeditorialboardformanyjournals.
+YASASREELASYAANNAMBHOTLA(Member,
+IEEE) is currently pursuing the B.Tech. degree T. V. SMITHA received the Ph.D. degree in
+in computer science from the Amrita School mathematicsfromAmritaVishwaVidyapeetham,
+of Computing, Amrita Vishwa Vidyapeetham, Bengaluru, in 2019, and the Master of Science
+Bengaluru, India. Her research interests include degree in mathematics from IIT Bombay. She
+artificialintelligence,machinelearning,anddeep is currently an Assistant Professor of mathe-
+learning,withafocusonfindingoptimalsolutions matics with Amrita Vishwa Vidyapeetham. Her
+forvariousproblems.Shehaspublishednotable research interests include computational mathe-
+researcharticlesinthefieldofmachinelearning. matics,finiteelementanalysis,datascience,and
+SheservesastheViceChairfortheIEEECompu- machinelearning.
+tationalIntelligenceSociety(CIS)attheAmritaVishwaVidyapeetham.
+VOLUME13,2025 183577
+=== PAGE 22 ===
+K.S.Kammarietal.:ComprehensiveReviewofDeepfakeDetectionTechniquesUtilizingrPPG
+TONY JAN (Member, IEEE) is currently the GANESH R. NAIK (Senior Member, IEEE)
+Head of the School of IT and the Director received the Ph.D. degree in electronics engi-
+of the Artificial Intelligence Research Centre, neering, specializing in biomedical engineering
+Torrens University Australia. He was previously and signal processing, from RMIT University,
+the Associate Head and an Associate Professor Melbourne, Australia, in December 2009. He is
+withtheSchoolofITandEngineering,Melbourne currently a Senior Lecturer of IT and CS with
+Institute of Technology, and the University of TorrensUniversityAustralia,Adelaide,Australia.
+Technology Sydney, respectively. He specializes Previously, he was an Academic and Research
+in machine learning for cybersecurity and smart Theme Co-Lead at the Sleep Health, Flinders
+technologies,withover70articlesinprestigious University. He held a Postdoctoral Research
+journalssupportedbyseverallargeresearchgrantstotalingoverU.S.$20 Fellow position at MARCS Institute, Western Sydney University, from
+millioninthedomainsofAIautomationandhomelandsecurity. July 2017 to July 2020. Before that, he held a Chancellor’s Postdoctoral
+ResearchFellowshipwiththeCentreforHealthTechnologies,Universityof
+TechnologySydney(UTS),fromFebruary2013toJune2017.Heranked
+top 2% of researchers worldwide in biomedical engineering, is a leading
+expertindatascienceandbiomedicalsignalprocessing.Asamid-career
+Researcher, he has edited 15 books and authored around 160 papers in
+peer-reviewedjournalsandconferences.HeisanAssociateEditorofIEEE
+ACCESS, Frontiers in Neurorobotics, and two Springer journals. He is a
+Baden–WürttembergScholarshiprecipientfromBerufsakademie,Stuttgart,
+and Germany (2006–2007). In 2010, he was awarded the ISSI Overseas
+FellowshipfromSkilledInstitute,VIC,Australia.Recently,hewasawarded
+theBridgeTechIndustryFellowshipfromtheMedicalResearchFutureFund,
+GovernmentofAustralia.
+183578 VOLUME13,2025

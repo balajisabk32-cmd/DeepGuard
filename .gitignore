@@ -65,3 +65,9 @@ models/*
 *.log
 results/*
 !results/.gitkeep
+
+# Third-party sample media at repo root (licence-unclear, not ours to redistribute)
+*.mp4
+*.mov
+*.mkv
+*.webm

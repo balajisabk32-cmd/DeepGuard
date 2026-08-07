@@ -1,0 +1,776 @@
+=== PAGE 1 ===
+International Journal of Computational and Experimental
+Science and ENgineering
+(IJCESEN)
+Vol. 11-No.1 (2025) pp. 886-898
+http://www.ijcesen.com
+Copyright © IJCESEN ISSN: 2149-9144
+Research Article
+Deepfake Detection Based on Visual Lip-sync Match and Blink Rate
+Homam El-Taj1*, Fatima Alammari2, Joud Alkhowaiter3, Layal Bogari4, Renad Essa5
+1Dar Al-Hekma University, Cybersecurity Department, Jeddah, Saudi Arabia
+* Corresponding Author Email: htaj@dah.edu.sa - ORCID: 0000-0001-7565-4760
+2Dar Al-Hekma University, Cybersecurity Department, Jeddah, Saudi Arabia
+Email: fmalammari@dah.edu.sa -ORCID: 0009-0000-2728-0311
+3Dar Al-Hekma University, Cybersecurity Department, Jeddah, Saudi Arabia
+Email: jialkhowaiter@dah.edu.sa- ORCID: 0009-0008-3735-5661
+4Dar Al-Hekma University, Cybersecurity Department, Jeddah, Saudi Arabia
+Email: lybogari@dah.edu.sa - ORCID: 0009-0000-8837-619X
+5Dar Al-Hekma University, Cybersecurity Department, Jeddah, Saudi Arabia
+Email: rmessa@dah.edu.sa -ORCID: 0009-0008-2978-2161
+Article Info: Abstract:
+DOI: 10.22399/ijcesen.755 Deepfake technology has emerged as a significant challenge to the authenticity of digital
+Received : 12 December 2024 media, necessitating innovative detection methods. This paper introduces TrueSync, an
+Accepted : 13 January 2025 advanced application for detecting deepfake videos by integrating two critical detection
+features: lip-sync analysis and blink rate monitoring. Leveraging a hybrid approach
+Keywords :
+combining CNN-LSTM and SyncNet models, TrueSync processes visual and temporal
+features to identify anomalies in lip movement synchronization and eye blinking patterns.
+Deepfake Detection,
+The application utilizes a modular pipeline to analyse these features independently and
+visual lip-sync matching,
+then fuses the results for a comprehensive detection score. This approach enhances
+Blink Rate,
+detection accuracy and provides users with reliable tools to combat sophisticated
+Artificial Intelligence,
+manipulations. By proposing this scalable solution, TrueSync addresses the increasing
+difficulty in distinguishing authentic videos from manipulated content, fostering trust in
+digital media.
+1. Introduction which can deviate from natural human behavior, are
+another key indicator of deepfake manipulation. The
+Deepfake technology has rapidly advanced, utilizing difficulty of identifying these anomalies emphasizes
+artificial intelligence to manipulate video, audio, and the need for more robust detection systems capable
+images, creating highly realistic yet fabricated of recognizing both lip-sync and blink rate
+media. While these advancements have proven inconsistencies. This paper introduces TrueSync, an
+beneficial in areas such as accessibility for innovative deepfake detection application that
+individuals with speech impairments, they also combines two core features: visual lip-sync analysis
+present significant societal risks. The malicious use and blink rate monitoring. Using advanced machine
+of deepfakes for deception purposes such as identity learning models, including CNN-LSTM for blink
+theft, and misinformation, has raised serious rate detection and SyncNet for lip-sync analysis,
+concerns about the integrity of digital content and its TrueSync addresses the challenge of detecting
+implications for privacy and security. A particularly deepfakes by analyzing both spatial and temporal
+dangerous subset of deepfakes includes those that features of the video. The CNN-LSTM model tracks
+alter lip movements to match altered audio, a form the blink rate by evaluating eye states (open or
+of manipulation known as lip-sync deepfakes. These closed), while the SyncNet model assesses the
+videos are challenging to detect due to their subtlety, synchronization between lip movements and audio.
+as the imperfections are localized primarily to the lip This hybrid approach improves detection accuracy
+region, making it easier to produce convincing fakes. and provides a scalable solution for identifying
+Similarly, inconsistencies in blinking patterns, manipulated content. The following sections explore
+=== PAGE 2 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+the current landscape of deepfake detection, the detection: visual lip-sync matching and eye-blink
+design and functionality of the TrueSync rate detection. Blinking, the rapid opening and
+application, its integration of the CNN-LSTM and closing of the eyelids, is an involuntary action
+SyncNet models, and the results demonstrating its regulated by the pre-motor area of the brainstem.
+effectiveness. The paper concludes by evaluating Spontaneous blinking ensures the maintenance of an
+TrueSync's potential to enhance trust and credibility adequate tear film on the cornea, supporting eye
+in digital media and its future applicability in health and visual function. However, blinking serves
+combating evolving deepfake technologies. additional functions beyond corneal protection, as
+demonstrated by the differences in blinking rates
+1.2. Problem Statement among adults and infants. Blinking patterns also
+vary based on activities and external factors. For
+Identifying whether a video is authentic or instance, blinking frequency increases during
+manipulated has become increasingly difficult. activities like reading aloud or rehearsing visual
+Deepfake technology can produce highly convincing information but decreases during tasks requiring
+videos with seemingly accurate lip-syncing and eye- intense visual focus, such as silent reading.
+blink patterns, making them appear legitimate. This Blink rates are influenced by multiple factors,
+creates significant challenges for individuals trying including physical well-being, cognitive task
+to distinguish real content from fake. complexity, physiological conditions, and an
+individual’s capacity for processing information. By
+1.3. Goal gathering and statistically analyzing this
+information, it is possible to predict the frequency
+The goal is to develop a user-friendly platform that and variability of eye blinks to a certain degree. In
+enables non-experts to upload videos for deepfake contrast, deepfake videos often show an absence or
+detection. By combining two advanced models— irregularity in blinking, which serves as a key
+visual lip-sync matching and blink rate analysis— indicator of manipulation. Deepfake detection also
+into a single, accessible interface, the platform aims involves analyzing inconsistencies between mouth
+to enhance detection accuracy. shape dynamics—visemes—and the phonemes
+being spoken. This approach differentiates between
+1.4. Objectives open and closed eye states while incorporating
+temporal information to detect anomalies.
+- To enhance detection: Improve the accuracy of Evaluations using benchmarks from eye-blinking
+distinguishing between real and deepfake videos by detection datasets have shown promising results,
+utilizing lip-sync and blink rate analysis. demonstrating the method’s effectiveness in
+- To reduce false positives: Minimize the identifying videos generated through Deepfake
+misidentification of real content, thereby protecting technology. The integration of visual lip-sync
+individuals’ reputations and avoiding unnecessary matching and blink rate detection enhances current
+alarms over authentic videos. tools for multimedia authentication. This dual
+- To mitigate false negatives: Prevent instances approach contributes to the security and
+where the system fails to identify a video as fake, dependability of multimedia content, addressing the
+ensuring reliable detection. growing challenges posed by Deepfake
+- To analyze natural blink rate and lip-sync: Examine manipulation in the digital era.
+blink rate and visual lip-sync patterns to derive The visual lip-sync match detection process includes
+insights that refine detection techniques various components for enhanced clarification, such
+- To create a deepfake detection application: as phoneme-viseme correlation, which examines the
+Develop an application that integrates visual lip- relationship between sound units (phonemes) and lip
+sync analysis and blink rate monitoring, providing shapes (visemes) for detection. As our solution is
+detection results as a percentage. based on machine learning (ML), the research
+primarily focuses on SyncNet models, with
+2. Literature Review comparisons to alternative models for broader
+analysis. Additionally, the approach incorporates
+Deepfake technology, powered by advanced imitation-based visual lip-sync detection, aiming to
+machine learning algorithms, has raised significant achieve a high detection accuracy score. Phoneme
+concerns about the authenticity of digital media. As recognition involves converting audio into text,
+the capability to produce highly realistic fake videos which is processed by a model. Cropped audio
+grows, the need for robust detection methods segments are used to apply a transition model,
+becomes increasingly critical. This review focuses denoted as ϕstt. The transmitted text tktk and audio
+on two innovative approaches for deepfake xkxk are integrated using forced alignment,
+887
+=== PAGE 3 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+represented by ϕfa, to align the text with spoken which correspond to vertex shapes on a plane. Only
+audio. Moreover, PaPa represents the phoneme units distances calculated along the lip track are measured
+in the spoken audio, and sPtsPt shows the timing of and matched to key points. This analysis determines
+each phoneme. Finally, the phonemes are filtered which lip movements correspond to each syllable of
+and extracted based on a predefined set of languages, the audio. These calculated distances, captured
+as illustrated in the figure 1. This method enables frame by frame, are then provided as input to a
+precise timing calculations for every sound in the Machine Learning (ML) model, which trains the
+audio. It also generates an array of phonemes in the system for dyadic alignment of lip movements,
+International Phonetic Alphabet (IPA) format, along enabling precise lip recognition [2].
+with corresponding timestamps in the audio data. The primary focus of this research is on the SyncNet
+The IPA system further facilitates cross-linguistic model, which is designed to analyze audio and video
+comparison, revealing how sounds are perceived by encoding short sequences into a shared space. The
+across different languages [1]. The lip-syncing model reduces the distance between synchronized
+process relies on the relationship between phonemes pairs while keeping unsynchronized pairs far apart.
+(basic sound units) and visemes (lip shapes). This SyncNet finds a global shift across all frames by
+coupling is instrumental in detecting lip-sync errors calculating the loss, improving its accuracy in
+in videos and functions across multiple languages, detecting lip-sync discrepancies. SyncNet has
+making PhoVis an adaptable system for a variety of demonstrated significant improvements in detection
+linguistic contexts. Phonemes, the smallest units of accuracy, increasing from approximately 76% to
+speech sounds, correspond to visemes, the visual nearly 95% on a specific, small-scale dataset, as
+representations of lip shapes during speech. Studies illustrated in Figure 2. These steps also include
+indicate that multiple phonemes can correspond to modifications to the training approaches used in
+the same viseme [1]. For instance, the word "pet" machine learning models, such as redefining the lip-
+contains the phoneme /P/, while “bell” includes the sync problem as a classification task. Additionally,
+phoneme /B/. Although these phonemes differ, they more complex structures, such as transformers, are
+appear visually similar when spoken because they employed to evaluate the synchronization between
+are mapped to the same viseme. When phoneme audio and video [3, 4, 5].
+alignment is consistent between the original and
+dubbed audio, it becomes possible to adjust a
+speaker’s lip movements in the video to match these
+sounds [1]. Is phoneme recognition possible by
+listening to the audio and using a model to convert it
+into text? If so, would a "forced aligner" tool then
+match the phonemes in the audio with words in the
+sentence, as shown in Figure 2 [1].
+Figure 2. Lip-sync Detection Accuracy Improvement.
+Novel approaches in this realm focus on
+understanding the relationship between video and
+Figure 1. Algorithm for phoneme extraction from given audio through attention mechanisms. Audio-visual
+audio.
+streams emphasize extracting and analyzing the
+information necessary to recognize the
+The evaluation of lip-sync accuracy in multimedia
+synchronization between speech and the visual
+applications involves focusing on phonemes that can
+appearance of lip movements. For instance, dividing
+be matched to the visemes of the target language.
+a screen into smaller segments can help establish the
+This approach is applicable to languages such as
+relationship between sounds and videos. This
+English, French, Italian, German, and Spanish. A 2D
+approach is more complex and is visually
+key-point representation is utilized to depict lip
+represented by violin plots, as shown in Figure 2.
+shapes during speech. These coordinates act as
+These plots are highly effective for displaying error
+invisible points on the lips, capturing their
+data, revealing that SyncNet’s estimation errors are
+movements in real-time. The process incorporates
+significantly smaller compared to other systems.
+Spherical Geometric Anchor LIP and Expected Lip,
+This ensures a high level of accuracy across varying
+888
+=== PAGE 4 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+signal sampling rates. An alternative option, is crucial for understanding the context. These
+involving fixed-size window techniques, also models are particularly valuable for lip-reading,
+demonstrates SyncNet’s ability to handle signals of where understanding meaning from movements over
+different lengths without compromising accuracy time is necessary [10,11]. To enhance detection
+[5]. Additionally, the MSFC (Mel-Spectrogram Fed accuracy, the 3DCNN (Deep Convolutional Neural
+ConvNet) is a type of neural network trained to use Network) model is applied to extract lip motion
+the visual representation of sound (referred to as an features by incorporating word boundary
+electogram) as input. The GCC-PHAT (Generalized information and improving feature extraction
+Cross-Correlation with Phase Transform) method is techniques. Additionally, researchers are exploring
+employed for estimating time delays. This technique methods to enhance lip-reading capabilities for
+accounts for the phase of signals, further improving previously unseen speakers. This involves the
+accuracy. The training of these methods utilized integration of audio-visual cues using CNN
+three datasets—MTic, Librispeech, and MBeat—for (Convolutional Neural Network) models and
+evaluating SyncNet’s performance. Results, as standard lip shapes, which help reduce variations
+shown in Figure 3, demonstrate that SyncNet across different speakers [11, 12]. Wang and Zang
+achieves superior accuracy and robustness compared developed a system integrating RNN (Recurrent
+to other methods [5]. Neural Network) and CNN to implement the CRNN
+SyncNet’s performance is illustrated in Figure 3, (Convolutional Recurrent Neural Network) model,
+showcasing the absolute error for SyncNet, MfCN, resulting in an improved performance [12]. The
+and GCC-PHAT across three datasets. A vertically CRNN model combines the spatial feature extraction
+lower distribution in the violin plots signifies strengths of CNN with the temporal dependency
+superior performance. These results emphasize capabilities of RNN, making it especially effective
+SyncNet’s enhanced accuracy and robustness in for sequential data processing. This hybrid model
+estimating lip-sync errors when compared to other improves the detection of features such as speech
+methods, as demonstrated by the visual clarity of the frames by sorting the movement of speech signals
+violin plots. Alternative methods for deepfake and reducing background noise [13, 14]. Table 1.
+detection include RNN (Recurrent Neural Network) shows comparison between each model. The
+and TCN (Temporal Convolutional Network) synchronization between spoken audio and lip
+models. TCN is particularly efficient for processing movements is referred to as lip-syncing. While
+long data sequences because it avoids the looping integrating audio input with lip movement enhances
+mechanisms inherent in RNNs. This structural detection accuracy and increases scoring precision,
+difference eliminates challenges such as the 'gradient several limitations exist. Limitation-based deepfakes
+exploding' problem, allowing smoother learning are techniques that often rely on manipulating a
+signals and improved data processing. Both RNN person's voice in a sound recording to mimic another
+and TCN are effective for sequential data analysis; person’s modified voice. This method is designed to
+however, TCN’s architecture often gives it a secure the immunity of the original speaker. For
+performance advantage over RNN [6]. LSTM (Long example, applying algorithms such as the Efficient
+Short-Term Memory) models are highly effective Wavelet Mask (EWM) on a recording of a person,
+for detecting lip-sync disparities due to their memory can change it. This process involves obtaining two
+units' ability to process changing signals and voices: the original speaker's voice and a target
+recognize complex relationships in time-series data. speaker's voice. The algorithm modifies the original
+They also provide clearer feedback by tracing how sound to resemble the target sound. The final output
+different inputs influence the output. This capability is often so realistic that distinguishing between the
+enhances the model's ability to learn sequential data, original and altered voices becomes challenging,
+making it easier to extract features from speech. thereby creating a credible privacy boundary that
+Moreover, LSTMs can merge lip movements across conceals the original speaker's identity [15]. The
+multiple languages other than English, enabling the process of detecting deepfakes often relies on the
+exploration of interactions between visual lip characteristics of the datasets used to train or
+movements and speech sounds (phonemes) in evaluate fake algorithms. Researchers examine the
+various linguistic contexts [7-9]. Similarly, GRU distribution and accuracy of training datasets, as
+(Gated Recurrent Unit) models share functional deepfake algorithms often fail to capture the full
+similarities with RNNs but excel in determining complexity and diversity of real-world data.
+which information to retain or discard and deciding Additionally, reverse-engineering techniques can be
+how much past information to forget. Both GRUs applied to deepfake models to identify artifacts or
+and LSTMs are better suited than standard RNNs for signatures that reveal their real identity [16]. Preeti
+handling sequences, as they can recall not only et al. [17] conducted a study titled "Methods to
+immediate past but also distant information, which Create Deepfakes Using GAN," which utilized a
+889
+=== PAGE 5 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Figure 3. Violin plots showing the absolute error for SyncNet, MfCN, and GCC-PHAT across all three datasets. A
+distribution that is lower vertically denotes superior performance.
+Table 1. Comparison between each model.
+Model Key Features Strengths Weaknesses
+SyncNet -Analyze the video and audio -High accuracy in lip-sync -Relatively new, and may need
+-Uses share spaces encoding detection up to 95% further validation in diverse
+-Learns to minimize distance scenarios
+between synchronized pairs -Global shift calculation
+RNN -Recurrent connection to remember -Good for sequential data -Struggle with long-term
+past information dependencies
+-Faces exploding gradient issues
+TCN -No recurrent connection -Better gradient flow -May require more computational
+-Efficient processing of long -Handl long-term patterns power
+sequences quickly
+LSTM -Memory call for handling changing -Good for complex time -More complex than simpler
+data series relationships models
+-Provide insight into data
+influence
+GRU - Keeps or eliminates information -Efficient like LSTM but -Still share some limitations of
+depending on its significant. simpler RNN
+-Retains information from
+both the present and past
+CNN -Capute features of lip movement at -Enhanced feature -Require extensive training data
+the edges of words extraction for lip motion and may be complex to implement
+CRNN -Combines CNN for spatial features -Improved performance in -Complexity in integrating Both
+and RNN for temporal sequential data tasks CNN and RNN
+dependencies -Reduce background noise
+in speech detection
+891
+=== PAGE 6 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+combination of Convolutional Neural Networks Table 2. How Human Blinks differs depending on the
+(CNNs) to generate high-quality results even with activities.
+small and limited datasets. Human blinking is a Male Female
+fundamental, involuntary action crucial for eye Baseline 9 (12) 20(16)
+Tablet 4(6) 8(14)
+health and supporting visual function.
+PC100 5(8) 10(13)
+Blink rates and patterns vary due to factors such as
+PC330 7(8) 16(13)
+gender, environmental conditions, emotional states,
+Text (pasted 3(5) 10(15)
+activities, and levels of concentration. For instance,
+over display)
+people tend to blink less frequently during tasks that
+Text (book 4(3) 8(14)
+require focus, such as reading or working on a
+position)
+computer, while blink rates increase when they feel
+Text (book 2(7) 6(10)
+tired or anxious. Because blinking is both unique to position)
+each person and naturally consistent, it serves as a
+reliable measure for deepfake detection. By Table 3. Comparison between Normal and Deepfake Eye
+analyzing blink rates, researchers can identify blinking.
+unusual blinking patterns that may indicate Feature Natural Deepfake
+manipulated or fake content. Deepfake algorithms Human Blinking
+Blinking
+often fail to replicate natural blinking rhythms,
+Blink Rate (per Less than 5 in many
+making blink rate detection a powerful tool for 17-22
+minute) cases
+distinguishing authentic videos from AI-generated
+Often uniform,
+Varies based on
+fakes. Blink Duration consistent across
+activity
+Another crucial aspect in this research is the blink frames
+rate detection. Blinking rate/pattern has become a Algorithmically
+Spontaneous,
+Naturalness generated,
+vital factor in the evolution of deepfake detection, irregular
+predictable
+emerging as a key indicator of video authenticity.
+Reaction to Changes with
+Often lacks such
+Blinking is a natural, unconscious action that occurs Cognitive Load mental focus or
+correlation
+continuously, with frequency variations influenced or Fatigue fatigue
+by factors such as individual’s activity level, fatigue, Periodic or
+Periodicity Irregular
+completely absent
+and more. Typically, human blink rates range from
+17 to 22 blinks per minute, though these rates can
+LSTM's temporal sequence modeling strengths,
+vary due to external factors such as age, gender, and
+making it highly effective for detecting blink
+time of the day [18]. In contrast, deepfake videos
+patterns in video data. In this architecture, CNN
+often exhibit blink anomalies due to the difficulty in
+processes video frames individually to capture
+replicating natural human behavior. Such anomalies
+spatial features relevant to blinking. These features
+may include extended periods without blinking,
+include the state of the eye (open or closed), eyelid
+abnormally frequent blinking, or inconsistent blink
+position, and pixel intensity variations across the eye
+durations, making them critical markers for
+region. Once these spatial features are extracted,
+detection. Deepfake algorithms face significant
+they are passed to the LSTM layer, which tracks
+challenges in mimicking the unconscious variability
+blink sequences and timings across frames. This
+inherent in human blinks. While Generative
+enables the model to identify natural blinking rates
+Adversarial Networks (GANs) have significantly
+and detect anomalies that might indicate deepfake
+advanced in simulating facial features, replicating
+content.
+involuntary actions like blinking remains a challenge
+The CNN-LSTM hybrid model is highly effective
+[18]. Table 2 highlights how human blinks differs
+because it leverages CNN's proficiency in detecting
+depending on in the individual’s blinks. Moreover,
+detailed image features and LSTM's ability to track
+the differences between natural and deepfake
+temporal sequences. This combination is critical for
+blinking patterns are summarized in Table 3. These
+distinguishing normal blinking patterns from
+findings, based on research [18], highlight the
+irregularities often found in deepfake videos [19]. As
+distinct characteristics of human versus
+illustrated in Figure 4, the CNN-LSTM structure
+algorithmically generated blinking behaviors. The
+processes video data in two stages: CNN layers
+selected Blink Rate Detection model leverages a
+extract frame-level spatial features, such as the eye's
+hybrid architecture combining Convolutional Neural
+state (open or closed), while LSTM layers analyze
+Network (CNN) and Long Short-Term Memory
+these features as a time series. This allows the model
+(LSTM). This hybrid structure integrates the CNN's
+to track changes across consecutive frames,
+feature extraction capabilities with
+891
+=== PAGE 7 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+engineering to develop more efficient and
+sustainable solutions.
+A hybrid deepfake detection method incorporates
+detecting both the appearance (facial impressions)
+and the behavior of an individual. Appearance
+detection identifies visual inconsistencies, such as
+mismatched facial features or improper lighting,
+which may initially appear legitimate to users.
+Behavioral detection and analysis examines
+anomalies like facial expression mismatches,
+abnormal eye movements, or irregular blinking. It
+also evaluates the synchronization between lip
+movements and speech, enabling users or
+investigators to detect behavioral inconsistencies
+[21].
+A hybrid detection method leverages the
+incorporation of machine learning mechanisms such
+as Long Short-Term Memory Networks (LSTM) and
+Figure 4. CNN-LSTM model (Taşdelen, A., & Sen, B.
+Multilayer Perceptrons (MLP) to detect deepfake
+2021).
+images and videos. These methods have
+accurately capturing blink frequency and duration. demonstrated high accuracy in distinguishing
+By integrating spatial and temporal dependencies, between real and fake media. The algorithms used
+the CNN-LSTM model effectively monitors blink for training these models involve datasets containing
+rates, detecting unusual patterns that may signal a large number of real and manipulated faces,
+synthetic or manipulated content.The modular publicly available on platforms like Kaggle. This
+architecture of the CNN-LSTM model enables it to dataset comprises approximately 60,000 images
+adapt to various facial dynamics, making it an sourced from two different sources: the first is
+effective tool in multi-feature deepfake detection FlickrFaces-HQ, which features real faces, and the
+tasks. Recent studies support the use of this hybrid second is Deepfake Detection Challenge dataset,
+model as they highlight its strong performance in which includes deepfake faces generated using
+detecting blink patterns, and its potential for Generative Adversarial Networks (GANs). The
+integration into broader detection frameworks. This integration of a Convolutional Neural Network
+adaptability enhances the model’s robustness against (CNN) and a Multilayer Perceptron (MLP) provides
+synthetic content [20]. an effective detection layer for accurately
+Deepfake algorithms face significant challenges in identifying deepfake videos. CNNs automatically
+accurately replicating human blink behaviour. extract key visual features and patterns from video
+Blinking is a complex and involuntary action frames, helping to discern real content from
+influenced by factors such as cognitive load, fatigue, manipulated footage. Concurrently, MLPs focus on
+and mental health. Research indicates that analyzing specific facial features such as eyes, nose,
+individuals tend to blink more frequently during mouth, eye blinks, and lip size. Capturing such
+conversations and less during high-focus tasks such details is critical, as deepfake videos often fail to
+as reading or complex problem-solving. Such subtle replicate these features accurately. Hybrid
+variations are difficult for deepfake algorithms to Optimized Deep Feature Fusion-based Deepfake
+replicate, often resulting in unnatural blink patterns Detection (HODFF-DD) is a novel technique
+[18]. The absence or irregularity of blinking designed for identifying deepfake videos, notable for
+frequency in deepfake videos serves as a critical red integrating the strengths of both Inception and
+flag for detection algorithms. For instance, many Residual Network architectures [22]. It combines the
+deepfake videos either omit blinks entirely or capabilities of two advanced deep learning models:
+simulate them at a rate far below or above normal InceptionResNetV1 and InceptionResNetV2. These
+human behaviour [19]. models are recognized for their proficiency in
+A hybrid system integrates two or more different analyzing image patterns and distinguishing
+features to provide a more effective and efficient between authentic and manipulated videos. The
+solution. These systems are designed to address technique’s effectiveness lies in the integration of
+diverse requirements, such as improving detection strengths from Inception and Residual Network
+capabilities or enhancing performance in fields such (ResNet) architectures [22]. The Inception
+as electronics and automobiles. Hybrid systems are component enables the model to analyze both small
+widely adopted in industries like automotive and large details in each video frame, identifying.
+892
+=== PAGE 8 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Table 4. Comparison between each model.
+Hybrid Detection Data Strengths Weaknesses
+Deepfake
+Detection
+Method
+Appearance and Focuses on detecting visual Its ability to analyze and detect It has limitations in detection and may fail
+Behavior facial and eye or lip both behavior and the physical to identify a fake video if the video is
+Detection inconsistency facial expressions crafted with high accuracy and realism.
+It focuses on detecting the Its ability to detect and analyze Performance might be affected due to the
+LSTM and MLP
+facial and pattern behavior both images and videos video resolution
+Detection
+inconsistency accurately
+It focuses on detecting Performance might be affected due to the
+CNN and MLP It detects facial expression with
+eyeblink and lip video resolution and lighting
+Detection high accuracy
+inconsistency
+Reaction to It focuses on in detecting It is expensive to implement
+Its ability to detect even with
+Cognitive Load or image patterns and facial
+low video resolution
+Fatigue inconsistency
+HODFF-DD
+subtle inconsistencies that may signify frequency. It will capture features such as the
+manipulation. Simultaneously, ResNet incorporates appearance of open or closed eyes, eyelid position,
+"shortcut" connections that simplify the learning and pixel intensity variations across the eye region.
+process and enhance the retention of critical features, This data will then be processed using the CNN-
+even in deeper networks. By merging these two LSTM model. The application will analyze lip-sync
+approaches, HODFF-DD effectively detects and and blink rate data separately. Both datasets will be
+classifies deepfakes, even under challenging trained using CNN-LSTM and SyncNet models.
+conditions such as variable lighting and appearances TrueSync will start with blink rate analysis, as facial
+[23-28]. Table 4 shows comparison between each features typically begin with the eyes, followed by
+modelTrueSync is an application designed for lip-sync evaluation. This sequencing ensures both
+deepfake video detection, focusing on two main efficiency and accuracy in detection. To integrate
+features: abnormal blink rates and visual lip-sync these processes, a Fusion module will combine the
+mismatches. The application analyzes videos outputs from the CNN-LSTM model and SyncNet.
+featuring a single individual to determine the video's By combining these two models, the application
+authenticity. The detection process begins by enhances detection capabilities, providing users with
+analyzing the individual’s blink rate using a hybrid high-accuracy results. By proposing this innovative
+Convolutional Neural Network with Long Short- approach, TrueSync addresses the challenges posed
+Term Memory (CNN-LSTM) architecture. This by increasingly sophisticated deepfake
+hybrid architecture is chosen for its proven ability to manipulations. It offers a robust and scalable
+enhance detection accuracy by effectively capturing solution, grounded in this research, to improve the
+both spatial and temporal features. After completing credibility and reliability of digital content. The
+the blink rate analysis, TrueSync transitions to implementation of this application is guided by
+analyzing the individual’s lip-sync movements using Equation 2.4, as illustrated in Figure 4. The process
+the SyncNet model. Renowned for its reliability and more clearly in equation 1.
+accuracy, SyncNet delivers robust results in
+detecting inconsistencies between lip movements 𝐿𝑖𝑝−𝑆𝑦𝑛𝑐𝐴𝑡ℎ𝑒𝑛𝑡𝑖𝑐𝑎𝑡𝑖𝑐𝑡𝑦𝑆𝑐𝑜𝑟𝑒(𝐿𝐴𝑆)=
+and audio. By integrating these two detection 𝐴𝑉𝑆𝐷 |𝐵𝐹𝐷|
+(1−𝛼)∙(1− )+ 𝛼∙(1− )∙𝐵𝑇𝐶 (1)
+methods, TrueSync ensures trustworthy and precise 𝑇𝑚𝑎𝑥 𝑅𝑚𝑎𝑥
+outcomes, making it a reliable tool for deepfake
+The first variable, α, represents the weight assigned
+video identification.
+to the blink factors, typically expressed as either 0 or
+The TrueSync application focuses on two core
+1, summarizing the impact of blink behavior. Tmax
+detection features: lip-sync analysis and blink rate
+denotes the maximum deviation (in milliseconds) of
+monitoring. These approaches are chosen to ensure
+the audio-visual (AV) sync, which measures the
+high detection accuracy and reliable results.
+difference between lip movements and
+The SyncNet module will be used for lip-syncing
+corresponding audio. The Audio-Visual Sync
+analysis. After extracting data from each video
+Deviation (AVSD) quantifies how closely the lip
+frame, features related to phonemes and visemes will
+movements align with the audio, indicating the
+be processed and trained to detect inconsistencies.
+precision of synchronization. For blink rate analysis,
+For blink rate monitoring, the process will follow a
+Rmax represents the maximum natural frequency of
+similar pipeline but will concentrate on blink
+blinking in a typical individual, while the Blink
+893
+=== PAGE 9 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Frequency Deviation (BFD) reflects how much the using the SyncNet method, ranges from 0 to 1, where
+individual's blink rate deviates from this natural higher scores indicate better alignment between
+frequency. If a person blinks faster or slower than speech and lip movement. For the blink rate, the
+usual, the BFD will capture this variance. This component compares the observed blink rate
+equation is crucial for the TrueSync application, as (RBlink) to the expected rate (Rexpected), reflecting
+it helps accurately assess the degree of typical human behavior, which may vary depending
+synchronization and provides a high detection score on the individual’s activity. As with the lip-sync
+based on lip-sync and blink rate data. The visual lip- score, a value close to 1 for the blink rate represents
+sync matching based on SyncNet is shown in a realistic blink pattern. A weighting factor (β)
+equation 2. allows the model to prioritize either lip-sync
+𝑆𝑦𝑛𝑐𝑁𝑒𝑡 = 1 ∑𝑁 sin (𝑉 ,𝐴 ) (2) accuracy or blink naturalness, based on the
+𝑁 𝑖=1 𝑖 𝐼 application. By combining these two components,
+This equation computes the similarity between lip
+TrueSync-B generates a balanced, normalized score
+movements (visual features) and speech (audio
+between 0 and 1. Higher scores reflect superior
+features). The SyncNets variable represents the
+synchronization and realism, making the application
+overall score, which is related to the video
+suitable for deepfake detection and audiovisual
+segmentation. The function sim (Vi, Ai) defines the
+content evaluation.
+similarity between visual features (Vi, lip
+Instead of creating a single method, multi-modal
+embeddings) and audio features (Ai, audio
+methods are more resistant when it comes to
+embeddings) at each frame. N denotes the total
+detecting deepfake.
+number of frames in the video. To clarify further,
+As there are plenty of models to be integrated, it
+audio and visual features (specifically from the lip
+achieves the concept of scalability.
+region) are extracted for each frame. SyncNet then
+The high robustness of multi-modal methods can
+computes feature embeddings to measure the
+foster the user’s trust in detection systems.
+similarity between these audio and visual
+embeddings. Finally, the average of the similarity
+3. Material and Methods
+scores across all frames is used to generate the final
+score. The blink rate detection is expressed in
+The TrueSync application processes user-input
+equation 3.
+video data through advanced techniques to detect
+𝑅 = 1 ∑𝑇𝜎(𝑓 (𝐸 )) (3)
+𝑏𝑙𝑖𝑛𝑘 1 𝐿𝑆𝑇𝑀 𝑡 deepfake content. The process begins with video
+𝑇
+This equation is used for blink rate detection, where preprocessing, where the system utilizes SyncNet
+RBlink represents the average blink rate per second, and CNN-LSTM to extract and analyze relevant
+as discussed earlier in the introduction and the blink features. The results are then generated as a
+rate section of this article. T stands for the total percentage score, reflecting the possibility of the
+duration of blinks, while Et represents eye features, video being authentic or manipulated. If no
+indicating whether the eye is open or closed, as abnormalities or deepfake indicators are detected,
+determined by a Convolutional Neural Network the system reprocesses the video through an iterative
+(CNN). The Long Short-Term Memory (LSTM) preprocessing stage to ensure accuracy and thorough
+network is responsible for identifying and detecting detection. Figure 5 is visual Lip-sync Matching
+eye blinks within a specified time frame (σ). The Flowchart and figure 6 is blink rate Flowchart.
+value of σ indicates whether the LSTM output TrueSync Flowchart is shown in figure 7. For visual
+corresponds to a blink event. CNN is essential for lip-sync detection in the TrueSync application,
+detecting eye states (open or closed) and collaborates features related to the alignment of lip movements
+with the LSTM and temporal modules to identify with corresponding sound are extracted from each
+anomalies that may suggest manipulation, such as video frame. These extracted features are trained and
+deepfake videos or other deceptive content. The processed using the SyncNet model, which evaluates
+TrueSync-B is given by equation 4. the results by comparing them to a dataset of normal
+lip movement behaviours. The evaluation results are
+TrueSync−B= β∗S SyncNet +(1−β)∗(1− then combined with blink rate data to calculate the
+|
+Rblink−Rexpected|)
+(4)
+final score percentage, determining the likelihood of
+Rexpected the video being authentic or manipulated. For the
+This equation integrates two key components: the
+blink rate model in the TrueSync application, a
+visual lip-sync score (SsyncNet) and blink rate
+hybrid approach combines Convolutional Neural
+deviation, to assess both audio-visual
+Network (CNN) and Long Short-Term Memory
+synchronization and natural eye-blinking behavior,
+(LSTM) models. The CNN layer applies filters,
+helping to determine whether the video is authentic
+introducing non-linearity, and reducing spatial
+or manipulated. The visual lip-sync score, calculated
+dimensions.
+894
+=== PAGE 10 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Additionally, it converts two-dimensional (2D) video frame that correspond to lip movements and
+image data into a one-dimensional (1D) format, associated audio. This data is processed and trained
+making it suitable for sequential learning and feature using the SyncNet model, which evaluates the
+classification. The processed output from the CNN results by comparing them to a dataset of normal lip
+serves as input to the LSTM layer, which then movement behaviors. The evaluation results from
+analyzes these features. The LSTM layer focuses on the SyncNet model are then combined with blink
+identifying and evaluating blink events and their rate data to calculate the final score percentage. This
+rates, ensuring accurate and reliable detection for score determines the likelihood of the video being
+distinguishing authentic videos from deepfake authentic or manipulated, providing a
+content. comprehensive analysis by integrating both visual
+In the TrueSync application, visual lip-sync lip-sync and blink rate features.
+detection begins by extracting features from each
+Figure 5. Visual Lip-sync Matching Flowchart.
+895
+=== PAGE 11 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Figure 6. Blink rate Flowchart.
+Figure 7. TrueSync Flowchart.
+896
+=== PAGE 12 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+4. Results and Discussions  Data availability statement: The data that
+support the findings of this study are available on
+The TrueSync application demonstrates its request from the corresponding author. The data
+effectiveness in detecting video manipulation by are not publicly available due to privacy or
+analyzing two critical features: lip-sync and blink ethical restrictions.
+rate.The application provides users with a score
+percentage, indicating the likelihood of a video References
+being authentic or manipulated. This functionality
+serves as a valuable mitigation tool, enhancing the [1]Gupta, H. (2024). Perceptual synchronization scoring
+credibility of digital content.Given the increasing of dubbed content using phoneme-viseme
+difficulty in distinguishing between authentic and agreement. Proceedings of the IEEE/CVF Winter
+Conference on Applications of Computer Vision,
+manipulated videos, TrueSync addresses this
+392–402.
+challenge by offering a user-friendly platform that
+[2]Zhou, Y., & Lim, S. N. (2021). Joint audio-visual
+allows non-technical users to upload videos for
+deepfake detection. Proceedings of the IEEE/CVF
+deepfake detection. The application integrates two
+International Conference on Computer Vision,
+advanced detection models—visual lip-sync
+14800–14809.
+matching and blink rate analysis—within a single, [3]Halperin, T., Ephrat, A., & Peleg, S. (2019). Dynamic
+accessible interface. By focusing on these two key temporal alignment of speech to lips. ICASSP 2019-
+features, TrueSync achieves not only high 2019 IEEE International Conference on Acoustics,
+percentage score but also accurate and reliable Speech and Signal Processing (ICASSP), 3980–
+results, ensuring robust performance and usability 3984. IEEE.
+[4]Park, S. J., Kim, M., Choi, J., & Ro, Y. M. (2024,
+for a wide range of users.
+April). Exploring phonetic context-aware lip-sync
+for talking face generation. ICASSP 2024-2024
+5. Conclusions
+IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP), 4325–
+This project introduces TrueSync, a robust and user- 4329. IEEE.
+friendly application designed to help non-expert [5]Yoon, D., & Cho, H. (2024). Lip and voice
+users detect deepfake videos. By integrating multi- synchronization using visual attention. The
+modal detection techniques—visual lip-sync Transactions of the Korea Information Processing
+matching and blink rate monitoring—TrueSync Society, 13(4), 166–173.
+[6]Guera, D., & Delp, E. J. (2018). Deepfake video
+enhances detection accuracy and resilience against
+detection using recurrent neural networks.
+adversarial attacks. This combination ensures
+Proceedings of the 15th IEEE International
+scalability, adapting to future advancements in
+Conference on Advanced Video and Signal Based
+deepfake technology. Ultimately, TrueSync
+Surveillance (AVSS), 1–6.
+contributes to fostering trust and security in digital
+[7]Li, Y., Chang, M. C., & Lyu, S. (2018). In ictu oculi:
+media, offering an accessible and reliable tool for Exposing AI generated fake face videos by detecting
+combating the growing challenges posed by eye blinking. arXiv preprint arXiv:1806.02877.
+deepfake content. [8]Farid, H. (2020). Creating, identifying, and combating
+deep fakes. IEEE International Workshop on
+Information Forensics and Security (WIFS).
+Author Statements:
+Retrieved from
+https://farid.berkeley.edu/downloads/publications/w
+ Ethical approval: The conducted research is not ifs20.pdf
+related to either human or animal use. [9]Gholipour, A., Taheri, A., & Mohammadzade, H.
+ Conflict of interest: The authors declare that (2021). Automated lip-reading robotic system based
+they have no known competing financial interests on convolutional neural network and long short-term
+memory. In Social Robotics: 13th International
+or personal relationships that could have
+Conference, ICSR 2021, Singapore, November 10–
+appeared to influence the work reported in this
+13, 2021, Proceedings 13 (pp. 73–84). Springer
+paper
+International Publishing.
+ Acknowledgement: The authors declare that
+[10]Almutairi, Z., & Elgibreen, H. (2022). A review of
+they have nobody or no-company to modern audio deepfake detection methods:
+acknowledge. Challenges and future directions. Algorithms, 15(5),
+ Author contributions: The authors declare that 155.
+they have equal right on this paper. [11]Al-Khazraji, S. H., Saleh, H. H., Khalid, A. I., &
+Mishkhal, I. A. (2023). Impact of deepfake
+ Funding information: The authors declare that
+technology on social media: Detection,
+there is no funding to be acknowledged.
+misinformation, and societal implications. The
+897
+=== PAGE 13 ===
+Homam El-Taj, Fatima Alammari, Joud Alkhowaiter, Layal Bogari, Renad Essa / IJCESEN 11-1(2025)886-1898
+Eurasia Proceedings of Science Technology [26]S. Esakkiammal, & K. Kasturi. (2024). Advancing
+Engineering and Mathematics, 23, 429–441. Educational Outcomes with Artificial Intelligence:
+[12]Mallet, J., Krueger, N., Vanamala, M., & Dave, R. Challenges, Opportunities, And Future Directions.
+(2023). Hybrid deepfake detection utilizing MLP International Journal of Computational and
+and LSTM. arXiv. Retrieved from Experimental Science and Engineering, 10(4).
+https://arxiv.org/pdf/2304.14504 https://doi.org/10.22399/ijcesen.799
+[13]Arshad, S., & Shah, S. C. A. (2024). Hybrid [27]Bandla Raghuramaiah, & Suresh Chittineni. (2025).
+optimized deep feature fusion-based deepfake BreastHybridNet: A Hybrid Deep Learning
+detection in videos using spotted hyena optimizer. Framework for Breast Cancer Diagnosis Using
+Computers & Security, 134, 102848. Mammogram Images. International Journal of
+https://doi.org/10.1016/j.cose.2023.102848 Computational and Experimental Science and
+[14]GeeksforGeeks. (2023). Residual networks (ResNet) Engineering, 11(1).
+– Deep learning. Retrieved from https://doi.org/10.22399/ijcesen.812
+https://www.geeksforgeeks.org/residual-networks- [28]Almutairi, Z., & Elgibreen, H. (2022). Advanced
+resnet-deep-learning/ detection of audio-visual deepfake patterns.
+[15]Cozzolino, D., Poggi, G., & Verdoliva, L. (2017). Algorithms, 15(6), 155–160.
+Recasting residual-based local descriptors as
+convolutional neural networks: An application to
+image forgery detection. Proceedings of the 5th
+ACM Workshop on Information Hiding and
+Multimedia Security, 159–164.
+[16]Yao, H., Huang, Z., & Tan, S. (2021). Detection of
+AI-synthesized video using temporal cues: Eye
+blinks and mouth movements. Journal of
+Information Security Research, 13(3), 155–167.
+[17]Raina, A., & Arora, V. (2022). SyncNet: Using causal
+convolutions and correlating objective for time
+delay estimation in audio signals. arXiv preprint
+arXiv:2203.14639.
+[18]Jung, T., Kim, S., & Kim, K. (2020). DeepVision:
+Deepfakes detection using human eye blinking
+patterns. IEEE Access, 8, 83144–83154.
+[19]Goodfellow, I., Bengio, Y., & Courville, A. (2016).
+Deep learning. MIT Press.
+[20]Chollet, F. (2017). Deep learning with Python.
+Manning Publications.
+[21]Wang, Y., & Zhang, H. (2024). Hybrid approaches
+for deepfake detection. Journal of Multimedia Tools
+and Applications, 2(4), 73–90.
+[22]Heidari, A., Jafari Navimipour, N., Dag, H., & Unal,
+M. (2024). Deepfake detection using deep learning
+methods: A systematic and comprehensive review.
+Wiley Interdisciplinary Reviews: Data Mining and
+Knowledge Discovery, 14(2), e1520.
+[23]Robert, N. R., A. Cecil Donald, & K. Suresh. (2025).
+Artificial Intelligence Technique Based Effective
+Disaster Recovery Framework to Provide Longer
+Time Connectivity in Mobile Ad-hoc Networks.
+International Journal of Computational and
+Experimental Science and Engineering, 11(1).
+https://doi.org/10.22399/ijcesen.713
+[24]ZHANG, J. (2025). Artificial intelligence contributes
+to the creative transformation and innovative
+development of traditional Chinese culture.
+International Journal of Computational and
+Experimental Science and Engineering, 11(1).
+https://doi.org/10.22399/ijcesen.860
+[25]M.K. Sarjas, & G. Velmurugan. (2025). Bibliometric
+Insight into Artificial Intelligence Application in
+Investment. International Journal of Computational
+and Experimental Science and Engineering, 11(1).
+https://doi.org/10.22399/ijcesen.864
+898

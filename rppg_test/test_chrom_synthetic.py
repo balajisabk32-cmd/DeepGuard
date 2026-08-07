@@ -2,14 +2,13 @@ import numpy as np
 import scipy.signal as signal
 import sys
 
-def main():
+def main(true_bpm=72):
     # 1. Fake a 20-second video signal at 30 fps
     fps = 30
     duration = 20
     num_frames = fps * duration
     t = np.linspace(0, duration, num_frames, endpoint=False)
-    
-    true_bpm = 72
+
     freq = true_bpm / 60.0
     
     # Generate sine wave
@@ -76,4 +75,15 @@ def main():
         print(f"Error: {error:.2f} bpm")
 
 if __name__ == "__main__":
-    main()
+    # Sweep several targets, not just 72.
+    #
+    # At fps=30 with nperseg=fps*10 the Welch bin spacing is 0.1 Hz = 6 BPM, and
+    # 72 BPM (1.2 Hz) lands EXACTLY on bin 12. This script reported ~0.00 error
+    # because of that alignment, not because the estimator was accurate — retarget
+    # to 75 BPM and the same code is off by 3.00 BPM, half a bin.
+    #
+    # The fix (zero-padded FFT + parabolic peak interpolation) lives in
+    # src/rppg/signal_core.py; tests/test_rppg.py asserts it across all targets.
+    for bpm in (66, 72, 75, 81, 93):
+        main(bpm)
+        print("-" * 40)

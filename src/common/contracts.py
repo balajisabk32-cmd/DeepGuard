@@ -77,6 +77,17 @@ class RPPGResult(_Strict):
     degraded_reason: Optional[str] = None  # set to "insufficient_pulse_snr" when the
                                            # §3.4 quality gate forces a neutral score
 
+    # --- PPG spatial-temporal map (FakeCatcher / DeepRhythm style) ---
+    # Optional so the 3-ROI path stays valid when the map is disabled.
+    map_patches_used: Optional[int] = None
+    map_corr_p25: Optional[float] = None          # robust stand-in for r_min
+    map_mean_patch_snr_db: Optional[float] = None
+    map_hr_temporal_jump_bpm: Optional[float] = None   # paper §3.3 HRV dimension
+    # Heatmap for the dashboard. Inner values are Optional: a patch that never
+    # held enough skin pixels has no coherence value, and None is the honest
+    # representation of that — not 0.0, which would read as "disagrees strongly".
+    map_coherence: Optional[List[List[Optional[float]]]] = None
+
 
 class LipSyncResult(_Strict):
     session_id: str

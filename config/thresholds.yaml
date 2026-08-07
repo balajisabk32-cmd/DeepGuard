@@ -11,11 +11,31 @@ rppg:
   quality_snr_floor_db: -3.0
   quality_snr_ceil_db: 9.0
   hr_spread_norm_bpm: 12.0
-  # Below this quality, the manipulation score is forced to 0.5 (neutral) rather
-  # than computed from noise-dominated ROIs. Removing this gate makes dark and
-  # compressed AUTHENTIC clips score as manipulated. See plan §3.4.
-  min_quality_for_scoring: 0.30
+  # Evidence-graded contribution (replaces the old hard cutoff).
+  #   quality <= min_quality_for_evidence  -> full abstention, score forced 0.5
+  #   quality >= quality_trust_full        -> score used at face value
+  #   in between                           -> shrunk toward 0.5 proportionally
+  # A hard cutoff made rPPG contribute NOTHING on real compressed footage, which
+  # is almost all footage. Shrinkage keeps it in the verdict at honest strength.
+  min_quality_for_evidence: 0.05
+  quality_trust_full: 0.35
+  min_quality_for_scoring: 0.30   # retained: consumers still read this as "trusted"
   weights: {corr: 0.40, spread: 0.35, phase: 0.25}
+  # PPG spatial-temporal map (FakeCatcher / DeepRhythm style, classical).
+  # Reference points from Kammari et al. 2024 §3: authentic faces hold pairwise
+  # r > 0.70 and HR spread < 12 BPM across regions.
+  map:
+    enabled: true
+    grid: [6, 5]                # 30 patches -> up to 435 pairwise comparisons
+    # Minimum skin-pixel fraction for a patch to count, per frame.
+    # Lives here because BOTH the offline detector (ppgmap.build_stmap) and the
+    # live viewer (webcam_heatmap) must agree. They previously hardcoded 0.35 and
+    # 0.30 independently, so the heatmap rendered patches green that analyze()
+    # was silently discarding — the picture disagreed with the verdict.
+    min_skin_fraction: 0.35
+    authentic_corr: 0.70
+    hr_jump_norm_bpm: 12.0      # paper §3.3 temporal HRV dimension
+    weights: {corr: 0.35, spread: 0.25, phase: 0.20, hrv: 0.20}
 lipsync:
   envelope_band_hz: [1.0, 8.0]
   window_sec: 1.0
