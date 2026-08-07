@@ -1,127 +1,158 @@
-# DeepGuard // Multi-Modal Deepfake & Manipulation Detection (v2.1)
+# DeepGuard
 
-**DeepGuard** is a quality-weighted multi-modal video manipulation detector fusing **cross-region blood flow consistency (rPPG)** with **speech-to-lip biomechanical alignment (VAD-gated cross-correlation)**.
+Multi-modal deepfake detection. Five independent channels, quality-weighted
+fusion, and an explicit right to say **"I don't know."**
 
-Upload-only. No live capture. It abstains when the evidence is weak, and says so.
+Upload-only. No live capture. No GPU required.
+
+```
+rPPG  ·  lip-sync  ·  pixel forensics  ·  frame-by-frame CNN  ·  synthetic imagery
+                              ↓
+                  quality-weighted log-odds fusion
+                              ↓
+     AUTHENTIC  ·  MANIPULATED  ·  UNCERTAIN  ·  INSUFFICIENT EVIDENCE
+```
 
 ---
 
-## 0. Quick Start (Offline Docker)
+## Quick start
+
+Two processes: a FastAPI backend and a Next.js frontend.
+
+**Backend** (from the repo root):
 
 ```bash
-docker compose up
+python -m uvicorn src.pipeline.api:app --host 127.0.0.1 --port 8000
 ```
 
-Open [http://localhost:8501](http://localhost:8501).
-
-Local development without Docker:
+**Frontend** (from `deepguard-x/`):
 
 ```bash
-python -m pip install -r requirements.txt
+npm install && npm run dev
 ```
+
+Open **http://localhost:3000**, then click *Launch DeepGuard*.
+
+If the backend runs on a non-default port, point the UI at it:
 
 ```bash
-pytest
+NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run dev
 ```
 
----
-
-## 1. Project Structure
-
-```
-├── config/
-│   └── thresholds.yaml         # Every threshold, one auditable file. No magic numbers in code.
-├── data/
-│   ├── corpus/                 # Evaluation clips + MANIFEST.csv (media is gitignored)
-│   └── sessions/               # Per-session scratch, purged on startup
-├── eval/
-│   └── run.py                  # CP2/CP3 evaluation harness
-├── models/                     # Vendored weights, baked into the image (gitignored)
-├── src/
-│   ├── common/contracts.py     # Executable Pydantic v2 schemas — the shared contract
-│   ├── rppg/                   # Biosignal extraction (CHROM / POS), 3-ROI consistency
-│   ├── lipsync/                # Speech-to-lip alignment
-│   ├── fusion/                 # Quality-weighted scorer + explanation generator
-│   ├── pipeline/               # ffmpeg normalize, single-pass landmarking, FastAPI
-│   └── ui/                     # Streamlit explainability dashboard
-├── tests/                      # Contract, fusion, and §6.2 edge-case tests
-├── plan.md                     # 24-Hour Execution Plan (v2.1)
-├── Dockerfile                  # Single image, two entrypoints
-└── docker-compose.yml          # api + ui services
-```
+> The backend warms EfficientNet-B7 and the SwinV2 synthetic detector at startup.
+> That takes ~30 s. It is deliberate — without it the *first* upload pays the
+> cold-load cost and lands around 60 s instead of ~35 s.
 
 ---
 
-## 2. Threat Model Coverage
+## Documentation
 
-**This table is a design claim, not a measurement.** It states which modality is *expected* to catch which attack class and why. Measured results live in `results/cp3.md` once the CP3 gate has run — until that file exists, nothing here has been evaluated.
-
-| Attack class | Example tools | rPPG consistency | Lip-sync alignment | Status |
-|---|---|---|---|---|
-| **Face swap** | SimSwap, FaceFusion | Expected to catch — mask boundary breaks cross-region pulse phase | Weak (lips still match audio) | In corpus (Class C, 6 clips) |
-| **Lip-sync / dub** | Wav2Lip | Weak (pulse largely intact) | Expected to catch — lag IQR drifts window to window | In corpus (Class D, 4 clips) |
-| **Reenactment** | Face2Face-style | Partial | Partial | **Not evaluated** (Class E, best-effort, ≤2 clips) |
-| **Synthetic video** | Text-to-video models | Expected to catch — no coherent pulse | Varies | **Not evaluated** (Class E, best-effort, ≤2 clips) |
-| **Voice clone only** | RVC-style | No | No — lips genuinely match the cloned audio | **Out of scope, declared** |
-
-Why fuse at all: no single modality covers both of the first two rows.
-
----
-
-## 3. Disclosed Limitations & Roadmap
-
-- **Demonstration corpus, not a benchmark.** ~28 curated clips across a handful of subjects. Results carry wide confidence intervals and are reported with them.
-- **Compression sensitivity.** rPPG micro-signal degrades under heavy re-encoding. Normalization does not recover it — transcoding is normalization, not a fix. Measured and disclosed, not solved.
-- **rPPG demographic variance.** Accuracy is known to vary with skin tone due to melanin absorption. **This is disclosed, not mitigated.** Fusing a second independent modality reduces reliance on rPPG alone, but does not correct the bias, and our corpus is far too small to quantify it. Roadmap item #2.
-- **Full-face swaps weaken the core signal.** Cross-region comparison works because swap masks typically exclude the forehead. A mask covering all three ROIs removes the contrast.
-- **Audio-only deepfakes.** Out of scope. Roadmap item #1.
-
----
-
-## 4. Submission
-
-> **H0-A deliverable — Role 4, due T+0:15.** Fill this in from the actual event rules before any code is written.
-
-| Item | Value |
+| Document | What's in it |
 |---|---|
-| Event / track | _TBD_ |
-| Submission deadline (local time) | _TBD_ |
-| Required artifacts | _TBD_ |
-| Demo time limit | _TBD_ |
-| Pre-recorded demo permitted? | _TBD_ |
-| Judging rubric weights | _TBD_ |
-| Submission portal URL | _TBD_ |
-
-**Submit a working version at T+20**, not in the final hour. Portal outages and slow video uploads are routine.
+| **[PROJECT_EXPLAINED.md](PROJECT_EXPLAINED.md)** | End-to-end narrative, datasets, measured results, Q&A. **Start here.** |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Module map, data flow, contracts, fusion maths |
+| [docs/API.md](docs/API.md) | REST endpoints and the WebSocket message contract |
+| [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | `thresholds.yaml` reference and the invariants that govern it |
+| [docs/MODELS.md](docs/MODELS.md) | Every model, its weights, licence, and admission status |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setup, tests, evaluation scripts, troubleshooting |
 
 ---
 
-## 5. Environment
+## What it actually does
 
-> **H0-B deliverable — Role 3, due T+0:30.** Nominate the demo laptop before anything else.
+A video is decoded **once**; the frames and face boxes are shared by every
+channel. Each channel returns two numbers — a manipulation score **and how much
+evidence it had**. Fusion combines them in log-odds weighted by that evidence, so
+a channel that cannot see anything cannot drag the verdict.
 
-| Machine | Owner | Cores / RAM | GPU | Python | ffmpeg on PATH | Docker | Demo laptop? |
-|---|---|---|---|---|---|---|---|
-| 1 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| 2 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| 3 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| 4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| # | Channel | Looks for | Votes? |
+|---|---|---|---|
+| 01 | **rPPG** | pulse coherence across face regions | yes |
+| 02 | **Lip-sync** | speech envelope vs mouth motion, lag drift | yes |
+| 03 | **Pixel forensics** | texture / warp / flicker anomalies | **no** — AUC 0.609, below gate |
+| 04 | **Frame-by-frame** | per-frame splice artefacts (EfficientNet-B7) | yes |
+| 05 | **Synthetic imagery** | whole-image generation (SwinV2) | **no** — compression confound |
 
-**Notes**
-
-- The entire MVP path is CPU-only by design. A GPU is a stretch-path convenience, never a requirement.
-- **Windows:** ffmpeg must be on `PATH`; Docker Desktop must use the WSL2 backend.
-- **Setup is owned, not shared.** Role 3 is the designated environment fixer. If your environment breaks, hand it over and keep working — do not let four people debug four installs.
-- **Lock dependencies at T+0:45.** On the first machine that installs cleanly, run `make lock` and commit `requirements.lock.txt`. `requirements.txt` states intent; the lock file is the contract.
+Two channels do not vote. That is a measured decision, not an oversight — see
+[Admission by measurement](#admission-by-measurement).
 
 ---
 
-## 6. Privacy & Consent
+## Honest performance
 
-The corpus contains team members' faces and derived heart-rate waveforms — biometric and health-adjacent personal data.
+| Metric | Value |
+|---|---|
+| TEST_VIDEOS (7 clips) | **6/7 correct**, 1 false negative |
+| effb7 in-domain (DFDC) | AUC 1.000 |
+| effb7 **in the wild** | AUC **0.550** ← quote this one |
+| Pixel forensics (subject-grouped CV) | AUC 0.609 |
+| Latency, idle 12-core CPU | median **35.5 s**, max 51.0 s |
 
-- `data/corpus/*` and `data/sessions/*` are gitignored. **Media is never committed.**
-- Written consent is recorded for every person appearing in the corpus.
-- `MANIFEST.csv` **is** tracked — keep real names out of `provenance_notes`; use subject IDs.
-- Dataset EULA terms are checked before any frame appears in the deck or README. Most academic deepfake datasets forbid redistribution and public display of frames.
-- Confirm this repository's visibility before pushing anything derived from the corpus.
+`n=7` supports no AUC claim. **The binding constraint on this project is corpus
+size, not model availability.**
+
+---
+
+## Admission by measurement
+
+> No model enters the verdict without a *measured* improvement over what we
+> already have.
+
+Scoring above chance is not the bar — improving the **system** is. Things that
+failed that bar and are therefore disabled or non-voting:
+
+| Model | Measured | Outcome |
+|---|---|---|
+| xception | AUC 0.222 vs effb7's 0.833 | disabled |
+| capsule | near-constant output across four clips | disabled |
+| PhysNet | −6.78 dB SNR vs CHROM's −3.26 | excluded |
+| DeepFakesON-Phys | identical score for all 13 clips | excluded |
+| Pixel forensics | fusing it moved AUC **0.670 → 0.639** | reports, does not vote |
+| Synthetic imagery | AUC **0.000** on video (compression confound) | reports, does not vote |
+
+Full detail and the isolating experiments are in
+[PROJECT_EXPLAINED.md §6](PROJECT_EXPLAINED.md).
+
+---
+
+## Design rules
+
+These are enforced in code and tests, not just aspirations:
+
+1. **Absent evidence ≠ zero evidence.** A channel that did not run must not
+   render as a `0.000` score. The UI shows non-voting channels greyed with the
+   measured reason.
+2. **No fabricated data reaches the user.** Placeholder sine waves, checkerboard
+   heatmaps, and hardcoded vitals have all been removed; a nullable field renders
+   as "unavailable", never as a plausible number.
+3. **Quality gates influence, not the prior.** Contribution = prior × evidence
+   quality, and it is the only number that moved the verdict.
+4. **Abstention is a correct output.** `UNCERTAIN` and `INSUFFICIENT_EVIDENCE`
+   are distinct verdicts with distinct causes and must never be merged.
+
+---
+
+## Repository layout
+
+```
+├── config/thresholds.yaml     every threshold, one auditable file
+├── src/
+│   ├── common/contracts.py    pydantic result contracts
+│   ├── pipeline/              decode → detect → api (FastAPI + WebSocket)
+│   ├── rppg/                  pulse extraction, PPG map, coherence tracker
+│   ├── lipsync/               audio demux, envelope/MAR correlation
+│   ├── visual/                CNN registry, pixel forensics, XAI, aigen
+│   └── fusion/scorer.py       log-odds fusion + decision gate
+├── deepguard-x/               Next.js frontend
+├── tests/                     pytest suite
+├── models/                    vendored weights (gitignored)
+└── results/                   measurement artefacts (JSON)
+```
+
+---
+
+## Licence note
+
+Model weights carry their own licences and are **not** uniformly permissive.
+`Organika/sdxl-detector` (Channel 05) is **CC-BY-NC-3.0 — non-commercial only**.
+See [docs/MODELS.md](docs/MODELS.md) before any commercial use.

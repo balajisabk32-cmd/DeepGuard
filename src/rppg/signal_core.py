@@ -15,6 +15,8 @@ spectral peak, which recovers sub-bin frequency regardless of alignment.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import numpy as np
 from scipy import signal as sps
 
@@ -40,16 +42,53 @@ def resample_to_uniform(t: np.ndarray, x: np.ndarray, fs: float) -> np.ndarray:
     return np.interp(grid, t_ok, x_ok)
 
 
+def detrend_linear(x: np.ndarray) -> np.ndarray:
+    """Closed-form least-squares line removal. Numerically identical to
+    `scipy.signal.detrend(x, type="linear")`, but does NOT call LAPACK.
+
+    scipy's linear detrend goes through `scipy.linalg.lstsq`. On this machine
+    (Anaconda scipy + pip torch) both link their own copy of libiomp5md.dll, and
+    calling LAPACK once torch is loaded raises OMP Error #15 and ABORTS THE
+    PROCESS — not an exception, a fatal abort no `except` can catch.
+
+    That matters here because lip-sync is moving to SyncNet (torch) while rPPG
+    stays on scipy: the two would share a process and take the whole pipeline
+    down mid-demo. Two lines of algebra removes the failure mode outright, and
+    it is faster than lstsq besides.
+    """
+    n = len(x)
+    if n < 2:
+        return np.asarray(x, dtype=np.float64)
+    t = np.arange(n, dtype=np.float64)
+    dt = t - t.mean()
+    denom = float((dt * dt).sum())
+    slope = float((dt * (x - x.mean())).sum() / denom) if denom > 0 else 0.0
+    return np.asarray(x, dtype=np.float64) - (x.mean() + slope * dt)
+
+
+@lru_cache(maxsize=64)
+def _butter_bandpass(order: int, lo: float, hi: float, fs: float):
+    """Filter DESIGN is deterministic in its arguments, so it is cached.
+
+    The overlap-add extractors call _bandpass once per 1.6s window, per channel,
+    per patch. On a 12s clip with a 30-patch map that is several hundred identical
+    `sps.butter` designs — and the design, not the filtering, dominated runtime.
+    Rounding the key keeps float jitter in `fs` from defeating the cache.
+    """
+    nyq = 0.5 * fs
+    return sps.butter(order, [lo / nyq, hi / nyq], btype="bandpass")
+
+
 def _bandpass(x: np.ndarray, fs: float, lo: float = HR_BAND[0], hi: float = HR_BAND[1]):
     nyq = 0.5 * fs
     hi = min(hi, nyq * 0.95)
     if lo >= hi or len(x) < 27:
         return np.zeros_like(x)
-    b, a = sps.butter(3, [lo / nyq, hi / nyq], btype="bandpass")
+    b, a = _butter_bandpass(3, round(lo, 4), round(hi, 4), round(fs, 3))
     padlen = 3 * max(len(a), len(b))
     if len(x) <= padlen:
         return np.zeros_like(x)
-    return sps.filtfilt(b, a, sps.detrend(x, type="linear"))
+    return sps.filtfilt(b, a, detrend_linear(x))
 
 
 # ---------------------------------------------------------------- extractors

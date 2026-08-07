@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #030305;
+  --panel: #0D0E15;
+  --core: #0B0C12;
+  --volt: #00F2FE;
+  --flux: #7928CA;
+  --pulse: #10B981;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--void);
+  }
+  ::selection {
+    background: rgba(0, 242, 254, 0.25);
+    color: #fff;
+  }
+}
+
+/* Ambient OLED mesh orbs — fixed, pointer-events-none, GPU-safe */
+@layer components {
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    opacity: 0.35;
+    will-change: transform;
+  }
+  .orb-cyan {
+    width: 52vw;
+    height: 52vw;
+    background: radial-gradient(circle, #00F2FE 0%, transparent 70%);
+    top: -18%;
+    left: -12%;
+  }
+  .orb-violet {
+    width: 46vw;
+    height: 46vw;
+    background: radial-gradient(circle, #7928CA 0%, transparent 70%);
+    top: 28%;
+    right: -16%;
+  }
+  .orb-emerald {
+    width: 38vw;
+    height: 38vw;
+    background: radial-gradient(circle, #10B981 0%, transparent 70%);
+    bottom: -14%;
+    left: 22%;
+  }
+
+  /* Film grain — fixed overlay only, never on scroll containers */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Double-Bezel (Doppelrand) shells */
+  .bezel-shell {
+    @apply bg-white/[0.03] p-2 rounded-bezel border border-white/10;
+  }
+  .bezel-core {
+    @apply bg-core rounded-[calc(2.5rem-0.5rem)] p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-volt bg-cyan-950/60 border border-cyan-500/30 px-3 py-1 rounded-full;
+  }
+}

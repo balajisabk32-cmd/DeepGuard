@@ -71,3 +71,45 @@ results/*
 *.mov
 *.mkv
 *.webm
+
+# Wav2Lip model weights. lipsync_expert.pth ~50MB, wav2lip_gan.pth ~400MB;
+# GitHub hard-rejects blobs over 100MB and the push fails at the worst moment.
+Wav2Lip/checkpoints/*
+!Wav2Lip/checkpoints/README.md
+Wav2Lip/temp/
+Wav2Lip/results/
+
+# ── Frontend build & dependencies ─────────────────────────────────────────
+# node_modules was NOT ignored while deepguard-x/ was untracked. The moment the
+# frontend is committed that becomes a multi-hundred-MB push of vendored deps.
+node_modules/
+.next/
+out/
+next-env.d.ts
+.vercel/
+*.tsbuildinfo
+
+# ── Datasets ──────────────────────────────────────────────────────────────
+# Evaluation corpora are large and mostly redistribution-restricted. Never
+# commit them; document how to obtain them instead.
+DeepfakeTIMIT/
+SDFVD*/
+TEST_VIDEOS/
+data/raw/
+feature_1/*.mp4
+
+# ── Scratch / working files ───────────────────────────────────────────────
+# Extracted paper text, screenshots and one-off exports. Useful locally,
+# noise in the repository.
+p*_text.txt
+extracted_*.txt
+coherence_*.png
+*.tar.gz
+*.zip
+
+# ── Vendored third-party repos, not part of the build ─────────────────────
+# EITLnet lives under a mojibake directory name, ships its own venv/, is not
+# imported anywhere in src/, and its licence is unclear. Keep it locally,
+# out of our history.
+*-d/
+Repos/

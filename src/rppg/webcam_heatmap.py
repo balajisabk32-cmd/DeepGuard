@@ -1,8 +1,8 @@
 """Spatial pulse-COHERENCE heatmap viewer — diagnostic tool, not a detector.
 
     python -m src.rppg.webcam_heatmap                    # live camera
-    python -m src.rppg.webcam_heatmap --video REAL.mp4   # a file
-    python -m src.rppg.webcam_heatmap --video REAL.mp4 --out annotated.mp4 --headless
+    python -m src.rppg.webcam_heatmap --video TEST_VIDEOS/REAL.mp4   # a file
+    python -m src.rppg.webcam_heatmap --video TEST_VIDEOS/REAL.mp4 --out annotated.mp4 --headless
 
 Keys: q quit, s snapshot.
 
@@ -291,6 +291,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--video", help="analyse a file instead of the camera")
     ap.add_argument("--out", help="write an annotated video here")
     ap.add_argument("--headless", action="store_true", help="no window (CI / Docker)")
+    ap.add_argument("--delay", type=int, default=28,
+                    help="ms per frame. Default plays at ~35fps; 1 = as fast as possible. "
+                         "The old hard-coded 1 made the whole clip flash past in seconds.")
+    ap.add_argument("--loop", action="store_true",
+                    help="restart the clip when it ends — keeps the panel on screen for a demo")
+    ap.add_argument("--hold", action="store_true",
+                    help="keep the final frame up until a key is pressed")
     args = ap.parse_args(argv)
 
     cfg = load_thresholds()
@@ -307,6 +314,17 @@ def main(argv: list[str] | None = None) -> int:
                   "or pass --video <file>.", file=sys.stderr)
             return 1
 
+    WINDOW = "DeepGuard // Pulse Coherence Map"
+    if not args.headless:
+        cv2.namedWindow(WINDOW, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(WINDOW, 720, 900)
+        try:
+            # Without this the window can open behind the terminal that launched
+            # it, which looks exactly like "no panel appeared".
+            cv2.setWindowProperty(WINDOW, cv2.WND_PROP_TOPMOST, 1)
+        except Exception:
+            pass
+
     cascade = cv2.CascadeClassifier(
         cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     tracker = CoherenceTracker()
@@ -318,6 +336,10 @@ def main(argv: list[str] | None = None) -> int:
     while True:
         ok, frame = cap.read()
         if not ok or frame is None:
+            if args.loop and args.video:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                frame_i = 0
+                continue
             break
 
         if args.video:
@@ -345,8 +367,8 @@ def main(argv: list[str] | None = None) -> int:
             writer.write(shown)
 
         if not args.headless:
-            cv2.imshow("DeepGuard // Pulse Coherence Map", shown)
-            key = cv2.waitKey(1) & 0xFF
+            cv2.imshow(WINDOW, shown)
+            key = cv2.waitKey(max(args.delay, 1)) & 0xFF
             if key == ord("q"):
                 break
             if key == ord("s"):
@@ -355,6 +377,10 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"saved {name}")
 
         frame_i += 1
+
+    if args.hold and not args.headless:
+        print("Press any key in the window to close...")
+        cv2.waitKey(0)
 
     cap.release()
     if writer is not None:

@@ -54,7 +54,8 @@ def _degraded(session_id: str, reason: str, t0: float, warnings=None) -> RPPGRes
     )
 
 
-def read_frames(video_path: str, max_sec: float = MAX_ANALYSIS_SEC):
+def read_frames(video_path: str, max_sec: float = MAX_ANALYSIS_SEC,
+                start_sec: float = 0.0):
     """Decode frames with REAL presentation timestamps.
 
     cv2.CAP_PROP_POS_MSEC reports the container timestamp of each frame. Using it
@@ -69,6 +70,12 @@ def read_frames(video_path: str, max_sec: float = MAX_ANALYSIS_SEC):
     nominal = cap.get(cv2.CAP_PROP_FPS)
     if not np.isfinite(nominal) or nominal <= 0:
         nominal = 30.0
+
+    # Seek by timestamp for multi-window aggregation. CAP_PROP_POS_MSEC seeking
+    # lands on the nearest keyframe, so the true start is re-read from the stream
+    # rather than assumed — the time axis stays honest.
+    if start_sec > 0:
+        cap.set(cv2.CAP_PROP_POS_MSEC, start_sec * 1000.0)
 
     frames, stamps, warnings = [], [], []
     while True:
@@ -147,17 +154,30 @@ def analyze(
     session_id: str = "local",
     thresholds: Optional[dict] = None,
     prefer_mediapipe: bool = True,
+    start_sec: float = 0.0,
+    max_sec: float = MAX_ANALYSIS_SEC,
+    clip=None,
 ) -> RPPGResult:
-    """Full rPPG analysis. Never raises."""
+    """Full rPPG analysis. Never raises.
+
+    `clip` accepts a pre-decoded DecodedClip so multi-window aggregation can
+    decode and detect once instead of once per (window x modality).
+    """
     t0 = time.time()
     try:
         cfg = thresholds or load_thresholds()
         rcfg = cfg["rppg"]
 
-        if not Path(video_path).exists():
-            return _degraded(session_id, "file_not_found", t0)
+        if clip is not None:
+            frames, t, nominal, warns = clip.frames, clip.t, clip.nominal_fps, list(clip.warnings)
+            boxes, counts = clip.boxes, clip.counts
+        else:
+            if not Path(video_path).exists():
+                return _degraded(session_id, "file_not_found", t0)
+            frames, t, nominal, warns = read_frames(video_path, max_sec=max_sec,
+                                                    start_sec=start_sec)
+            boxes = counts = None
 
-        frames, t, nominal, warns = read_frames(video_path)
         if len(frames) < 60:
             return _degraded(session_id, "too_few_frames", t0, warns)
 
@@ -165,15 +185,20 @@ def analyze(
         if duration < MIN_ANALYSIS_SEC:
             return _degraded(session_id, "clip_shorter_than_4s", t0, warns)
 
-        backend = backends.get_backend(prefer_mediapipe)
-        boxes, counts = backend.detect_boxes(frames)
+        if boxes is None:
+            backend = backends.get_backend(prefer_mediapipe)
+            boxes, counts = backend.detect_boxes(frames)
+            boxes = backends.smooth_boxes(boxes)
 
         detection_rate = float(np.mean(~np.isnan(boxes[:, 0])))
         if detection_rate < 0.10:
             return _degraded(session_id, "no_face_detected", t0, warns)
 
-        boxes = backends.smooth_boxes(boxes)
-        series, _ = backends.extract_roi_series(frames, boxes, counts)
+        # Reuse the hoisted per-frame work when aggregation supplied it.
+        if clip is not None and getattr(clip, "roi_series", None) is not None:
+            series = clip.roi_series
+        else:
+            series, _ = backends.extract_roi_series(frames, boxes, counts)
 
         # Effective sampling rate from REAL elapsed time, not the nominal rate.
         fs = (len(frames) - 1) / duration
@@ -205,7 +230,9 @@ def analyze(
             try:
                 from src.rppg.ppgmap import analyze_map, build_stmap, map_manipulation_score
                 gr, gc = mcfg.get("grid", [6, 5])
-                stmap = build_stmap(frames, boxes, rows=gr, cols=gc)
+                stmap = (clip.stmap if clip is not None
+                         and getattr(clip, "stmap", None) is not None
+                         else build_stmap(frames, boxes, rows=gr, cols=gc))
                 map_res = analyze_map(stmap, t, fs)
                 if map_res.degraded_reason:
                     map_res = None

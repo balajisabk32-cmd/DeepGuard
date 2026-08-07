@@ -31,7 +31,18 @@ soundfile>=0.12.0,<0.14.0       # librosa's I/O backend — missing = silent loa
 webrtcvad-wheels>=2.0.10,<3.0.0 # VAD gating (§3.4). Prebuilt wheels; plain `webrtcvad`
                                 # needs a C toolchain and fails on clean Windows boxes
 
+# --- Deep models (SyncNet lip-sync backend) ---
+torch>=2.0.0,<3.0.0             # (verified 2.11.0+cpu) SyncNet in Wav2Lip/run_sync_test.py
+                                # WARNING: torch and Anaconda scipy each link their own
+                                # libiomp5md.dll -> OMP Error #15 aborts the PROCESS if
+                                # scipy LAPACK is called after torch loads. src/rppg uses
+                                # detrend_linear() instead of scipy.signal.detrend to
+                                # avoid it. Do not reintroduce scipy LAPACK calls.
+
 # --- Media I/O ---
+av>=12.0.0                      # (verified 18.0.0) in-process FFmpeg: demuxes MP4 audio
+                                # and yields true per-stream start_time. No ffmpeg binary
+                                # is on PATH here, so this is required, not optional.
 ffmpeg-python>=0.2.0,<0.3.0     # NOTE: requires the ffmpeg BINARY on PATH (Dockerfile
                                 # installs it; host devs must install it themselves)
 

@@ -40,11 +40,55 @@ def test_zero_quality_modality_cannot_drag_the_verdict():
     assert result.modality["lipsync"]["quality"] == 0.0
 
 
-def test_single_modality_evidence_weight_is_capped_at_half():
-    """Documented ceiling (§3.5): raising min_evidence_weight above 0.5 would
-    silently break every silent clip."""
+def test_single_modality_evidence_weight_is_capped_at_its_prior():
+    """A lone modality can never exceed its own prior share of the total.
+
+    Was pinned at 0.5 when there were two equally-weighted modalities. With
+    rppg/lipsync/visual it is rppg's prior over the supplied total — the ceiling
+    is a property of the weights, not a constant, and min_evidence_weight must
+    stay below the SMALLEST prior or single-modality clips silently all abstain.
+    """
     result = _score(rppg_s=0.1, rppg_q=1.0, lip_s=0.1, lip_q=0.0)
-    assert result.evidence_weight == pytest.approx(0.5)
+    priors = CFG["fusion"]["prior_weights"]
+    expected = priors["rppg"] / (priors["rppg"] + priors["lipsync"])
+    assert result.evidence_weight == pytest.approx(expected)
+    # Compare against the prior SHARE, not the raw prior. These coincide only
+    # while the priors happen to sum to 1.0; the moment they do not, asserting on
+    # raw priors silently stops testing anything. evidence_weight is always
+    # sum(w*q)/sum(w), so the share is what a lone modality can actually reach.
+    total = sum(priors.values())
+    smallest_share = min(v / total for v in priors.values())
+    assert CFG["decision"]["min_evidence_weight"] < smallest_share, (
+        "a channel that is fully confident and alone must still clear the "
+        "evidence floor; adding a channel dilutes every share, so this floor "
+        "must be re-derived whenever a modality is added"
+    )
+
+
+def test_absent_modality_does_not_crash_the_verdict():
+    """Adding a modality to config must not break a two-modality caller."""
+    r = _score(0.2, 0.9, 0.2, 0.9)
+    assert 0.0 <= r.manipulation_probability <= 1.0
+    assert any("modalities_absent" in w for w in r.warnings)
+
+
+def test_every_configured_modality_fuses():
+    """Supplying every configured channel must raise no 'absent' warning.
+
+    Derived from the config rather than hard-coded to three names: this test used
+    to list rppg/lipsync/visual literally, so when the 4th (pixel) channel was
+    added it failed for the RIGHT reason but with a misleading message. Reading
+    the channel set from config means adding a 5th channel extends the test
+    instead of breaking it.
+    """
+    names = list(CFG["fusion"]["prior_weights"])
+    r = score(
+        modality_scores={m: 0.2 for m in names},
+        modality_quality={m: 0.8 for m in names},
+        session_id="unit-test", thresholds=CFG,
+    )
+    assert set(r.modality) == set(names)
+    assert not any("modalities_absent" in w for w in r.warnings)
 
 
 def test_insufficient_evidence_takes_priority_over_probability():

@@ -2,9 +2,19 @@ schema_version: "2.0"
 decision:
   authentic_max_p: 0.35
   manipulated_min_p: 0.65
-  # NOTE: evidence_weight is capped at 0.5 when only one modality is usable
-  # (e.g. silent video). Raising this above 0.5 breaks every silent clip. See plan §3.5.
-  min_evidence_weight: 0.30
+  # evidence_weight = sum(prior * quality) / sum(prior), so for a LONE usable
+  # modality it equals that modality's prior SHARE of the total. It must sit below
+  # the smallest share or a clip carrying one perfect channel abstains forever.
+  #
+  # This value has to be re-derived every time a channel is ADDED, because a new
+  # prior dilutes every existing share. Adding the 4th (pixel) channel dropped the
+  # smallest share from 0.30 to 0.15 and rppg's solo share from 0.30 to 0.25 —
+  # leaving the floor at 0.20 would have made the whole system abstain MORE simply
+  # because we added a channel that never votes. Caught by the invariant test.
+  # Rule: min_evidence_weight < min(prior)/sum(priors), with margin.
+  #   4 channels: priors sum 1.00, smallest share 0.150 -> floor 0.12
+  #   5 channels: priors sum 1.15, smallest share 0.130 -> floor 0.11 (16% margin)
+  min_evidence_weight: 0.11
 rppg:
   band_hz: [0.7, 4.0]
   min_window_sec: 12.0
@@ -42,11 +52,58 @@ lipsync:
   hop_sec: 0.5
   max_lag_ms: 300
   min_voiced_windows: 8
+  # Mean normalised cross-correlation peak at which the LAG estimate is trusted.
+  # lipsync_quality = coverage * clip(mean_peak_ncc / this, 0, 1). Coverage alone
+  # reported "I ran" as "I know something": a lag read off a correlation that
+  # never peaked is noise, and lag_iqr inherits that noise.
+  reliable_peak_ncc: 0.30
   lag_iqr_floor_ms: 40
   lag_iqr_ceil_ms: 160
   weights: {iqr: 0.50, ncc: 0.30, offset: 0.20}
+visual:
+  # Xception frame-level forgery detector (models/xception_fakeavceleb_video.pt).
+  # Checkpoint reports best_acc 0.740 -- moderate, not a solved problem. Treat its
+  # output as one vote among three, never as ground truth.
+  input_size: 224
+  fake_index: 1                 # VERIFIED against FF++ detect_from_video.py:195
+  crop_margin: 1.3
+  max_frames: 32
+  min_face_px: 64               # below this, 224px input is upscaled blur
+
+  # ---- aggregation + calibration (fitted 2026-08-07 on TEST_VIDEOS, n=9) ----
+  # Aggregate per-frame P(fake) with the 90th percentile, not the median.
+  # Measured AUC on the 9-clip set: p90 0.889, median/mean/top3 0.833, max 0.778.
+  # Rationale: a manipulated clip has SOME clearly-bad frames; the median washes
+  # them out. `max` looks perfect on a 24-frame sample (AUC 1.000) and collapses
+  # to 0.778 at 32 frames — it was reading sampling noise, so it is not used.
+  aggregation: p90
+  #
+  # effb7's raw sigmoid is compressed into 0.007-0.03 on this content, so the
+  # native scale never reaches any useful threshold. Calibration is a monotone
+  # 2-point map in logit space placing the UNCERTAIN band across the measured
+  # class overlap:  calibrated = sigmoid(a * logit(p90) + b)
+  #
+  # HONEST PERFORMANCE — fitted on all 9: 6/9 confident, 0 wrong, 3 abstain.
+  #                      LEAVE-ONE-OUT:   5/9 confident, 1 wrong, 4 abstain.
+  # Believe the LOO number. n=9 with 3 positives cannot support more than a
+  # provisional operating point; REFIT on a real corpus before quoting anything.
+  calibration:
+    a: 0.3613
+    b: 0.5313
+
 fusion:
-  prior_weights: {rppg: 0.5, lipsync: 0.5}
+  # Three modalities. Priors express relative importance when evidence is EQUAL;
+  # per-modality quality still decides how much each actually contributes.
+  # visual leads because it is the only branch with trained weights and a measured
+  # baseline; rppg and lipsync earn their weight back on footage that carries
+  # recoverable pulse and speech.
+  # Four mandated channels. `pixel` carries a prior so it is visible in the
+  # output, but it reports quality 0 until calibrated, and quality (not prior)
+  # is what gates contribution — so it currently has zero influence by design.
+  # Five channels. `pixel` and `aigen` carry priors so they appear in the output,
+  # but both report quality 0, and quality (not prior) gates contribution — so
+  # both currently have exactly zero influence, by measurement not by assumption.
+  prior_weights: {rppg: 0.25, lipsync: 0.25, visual: 0.35, pixel: 0.15, aigen: 0.15}
 ingest:
   min_duration_sec: 4.0
   max_decode_sec: 300.0

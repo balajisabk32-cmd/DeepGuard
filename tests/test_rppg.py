@@ -7,8 +7,13 @@ The bin-alignment test is the important one. It is the defect that made the
 original rppg_test/test_chrom_synthetic.py report PASS for the wrong reason.
 """
 
+import sys
+from pathlib import Path
+
 import numpy as np
 import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 from src.rppg.analyze import analyze
 from src.rppg.signal_core import (
@@ -136,6 +141,67 @@ def test_short_signal_does_not_crash_extractors():
     tiny = synth_rgb(72, dur=0.5)
     assert chrom_full(tiny, FPS).size == 0
     assert pos_overlap(tiny, FPS).size == 0
+
+
+def test_detrend_removes_the_least_squares_line():
+    """Checks the DEFINING property, not equality with scipy.
+
+    Comparing against `scipy.signal.detrend(type='linear')` would call LAPACK —
+    the very thing this function exists to avoid — and aborts the process once
+    torch is loaded. (That is not hypothetical: this test previously did exactly
+    that and killed the suite.) Least-squares line removal is fully characterised
+    by two conditions on the residual: zero mean, and zero correlation with t.
+    """
+    from src.rppg.signal_core import detrend_linear
+
+    rng = np.random.default_rng(0)
+    for n in (32, 301, 1024):
+        t = np.arange(n, dtype=float)
+        x = rng.normal(0, 1, n) + 0.13 * t + 5.0
+        r = detrend_linear(x)
+        assert abs(r.mean()) < 1e-9
+        assert abs(float(np.dot(r, t - t.mean()))) < 1e-6 * n
+
+    # An exact line must be annihilated entirely.
+    line = 3.0 + 0.7 * np.arange(256, dtype=float)
+    assert np.max(np.abs(detrend_linear(line))) < 1e-9
+
+
+@pytest.mark.skipif(
+    __import__("importlib.util", fromlist=["util"]).find_spec("torch") is None,
+    reason="torch not installed",
+)
+def test_pipeline_survives_torch_being_loaded():
+    """REGRESSION: torch + scipy LAPACK aborts the process (OMP Error #15).
+
+    Anaconda's scipy and pip's torch each link their own libiomp5md.dll. Calling
+    scipy.linalg.lstsq — which scipy.signal.detrend(type='linear') does — after
+    torch is imported kills the interpreter outright. Not an exception: a fatal
+    abort no try/except can catch. Lip-sync is moving to SyncNet (torch) while
+    rPPG stays on scipy, so both will share a process.
+
+    Run in a SUBPROCESS: importing torch into the pytest process would arm the
+    same landmine for every test that follows.
+    """
+    import subprocess
+
+    code = (
+        "import torch\n"
+        "import numpy as np\n"
+        "from src.rppg.signal_core import chrom_full, peak_frequency\n"
+        "t=np.arange(0,20,1/30.); p=np.sin(2*np.pi*1.2*t)\n"
+        "rgb=np.column_stack([150+0.5*p,100-5*p,100-1.5*p])\n"
+        "f0,_=peak_frequency(chrom_full(rgb,30.0),30.0)\n"
+        "assert abs(f0*60-72)<1.0, f0*60\n"
+        "print('OK')\n"
+    )
+    proc = subprocess.run([sys.executable, "-c", code], capture_output=True,
+                          text=True, timeout=300, cwd=str(REPO_ROOT))
+    assert proc.returncode == 0, (
+        f"rPPG aborted with torch loaded (rc={proc.returncode}). "
+        f"Someone reintroduced a scipy LAPACK call.\n{proc.stderr[-800:]}"
+    )
+    assert "OK" in proc.stdout
 
 
 def test_constant_input_is_handled():

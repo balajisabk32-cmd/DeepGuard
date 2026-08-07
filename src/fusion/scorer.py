@@ -13,6 +13,7 @@ degradation rule directly instead of bolting it on afterwards.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Dict, Mapping, Optional
 
@@ -48,14 +49,56 @@ def score(
     """
     cfg = thresholds or load_thresholds()
     decision = cfg["decision"]
-    weights: Dict[str, float] = cfg["fusion"]["prior_weights"]
+    configured: Dict[str, float] = cfg["fusion"]["prior_weights"]
     warnings = list(warnings or [])
 
-    num = sum(weights[m] * modality_quality[m] * modality_scores[m] for m in weights)
-    den = sum(weights[m] * modality_quality[m] for m in weights)
+    # Only score modalities the caller actually supplied. Adding a modality to
+    # config must not break existing callers, and a branch whose weights are
+    # missing at runtime should be ABSENT, not crash the verdict.
+    weights = {m: w for m, w in configured.items()
+               if m in modality_scores and m in modality_quality}
+    missing = [m for m in configured if m not in weights]
+    if missing:
+        warnings.append(f"modalities_absent:{','.join(sorted(missing))}")
+    if not weights:
+        weights = {m: 1.0 for m in modality_scores} or {"none": 0.0}
 
-    evidence_weight = den / sum(weights.values())
-    p = num / den if den > 1e-6 else 0.5
+    # ---- combine in LOG-ODDS, not as a weighted mean of probabilities ----
+    #
+    # A weighted arithmetic mean drags the result toward 0.5 whenever any
+    # modality sits at 0.5. That is wrong: a branch reporting 0.5 is saying "I
+    # have no information", not "I am confident this is ambiguous" — and the
+    # difference matters, because the first should be inert and the second
+    # should not be. Measured: a calibrated visual score of 0.650 collapsed to
+    # 0.618 purely because rPPG and lip-sync were sitting at 0.5, so a
+    # well-calibrated decision was averaged away by two branches that had
+    # nothing to say.
+    #
+    # In log-odds, evidence ADDS. logit(0.5) = 0, so an uninformative modality
+    # contributes exactly nothing; agreeing modalities reinforce each other
+    # (jointly more confident than either alone); disagreeing ones cancel. This
+    # is the naive-Bayes combination, and it is the behaviour the quality
+    # weighting was always meant to express.
+    #
+    # Priors are normalised against the strongest, so a single fully-trusted
+    # modality reproduces its own score rather than being shrunk by its prior.
+    max_w = max(weights.values()) or 1.0
+
+    def _logit(p: float) -> float:
+        p = min(max(float(p), 1e-3), 1.0 - 1e-3)
+        return math.log(p / (1.0 - p))
+
+    z = sum((weights[m] / max_w) * modality_quality.get(m, 0.0)
+            * _logit(modality_scores.get(m, 0.5))
+            for m in weights)
+    p_fused = 1.0 / (1.0 + math.exp(-z))
+
+    # evidence_weight stays an honest "how much of the available evidence did we
+    # actually get", independent of which way that evidence points.
+    den = sum(weights[m] * modality_quality.get(m, 0.0) for m in weights)
+    total_w = sum(weights.values()) or 1.0
+    evidence_weight = den / total_w
+    p = p_fused if den > 1e-6 else 0.5
 
     # --- decision path: the branch taken is what the explanation is built from ---
     if evidence_weight < decision["min_evidence_weight"]:
@@ -82,8 +125,8 @@ def score(
         evidence_weight=round(evidence_weight, 4),
         modality={
             m: {
-                "score": float(modality_scores[m]),
-                "quality": float(modality_quality[m]),
+                "score": float(modality_scores.get(m, 0.5)),
+                "quality": float(modality_quality.get(m, 0.0)),
                 "weight": float(weights[m]),
             }
             for m in weights
